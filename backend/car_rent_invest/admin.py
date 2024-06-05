@@ -2,8 +2,6 @@ from django.contrib import admin
 
 from car_rent_invest.models import UserRent
 
-# admin.site.register(UserRent)
-
 
 @admin.register(UserRent)
 class UserRentAdmin(admin.ModelAdmin):

@@ -1,12 +1,12 @@
-from email.header import Header
 import os
+from email.header import Header
 
 from celery import shared_task
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db import models
 
 from car.models import CarTechnicalService
-from django.db import models
 
 
 def _create_text_message(

@@ -1,6 +1,7 @@
 from rest_framework import serializers
+
 from api.technical_services_serializers import CarTechnicalServiceSerializer
-from car.models import (Car, CarPhoto, CarVideo)
+from car.models import Car, CarPhoto, CarVideo
 from car_rent_invest.models import UserRent
 
 
@@ -50,7 +51,6 @@ class CarMainPageSerializer(serializers.ModelSerializer):
 
 class CarSerializer(serializers.ModelSerializer):
     '''Получение информации по карточке автомобиля.'''
-    # TODO Можно просто вывести список видио и фото в одном списке
     photos = CarPhotoSerializer(many=True, read_only=True)
     videos = CarVideoSerializer(many=True, read_only=True)
 

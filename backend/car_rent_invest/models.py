@@ -85,8 +85,6 @@ class UserRent(models.Model):
 #     currency = models.CharField('Валюта', max_length=3, default='₽')
 # class UserInvestment(models.Model):
 #     '''Модель инвестиции связанная с пользователем'''
-#     # TODO подумать на счёт связей пользователей и аренды
-#     # TODO в данный момент не используется
 #     MIN_SUM_INVESTMENT = 100000
 
 #     investment = models.ForeignKey(

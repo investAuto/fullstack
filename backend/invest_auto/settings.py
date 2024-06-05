@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+NUMBER_OF_SERVICES_FOR_CLIENT = 5
+NUMBER_OF_SERVICES_FOR_ADMIN = 10
+
 PHONE_MAX_LENGTH = 12
 NAME_MAX_LENGTH = 150
 NOTIFICATION_LENGTH = 22
@@ -155,7 +158,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    # TODO ACCESS_TOKEN_LIFETIME 30 дней временное решение на время разработки
+    # NOTE ACCESS_TOKEN_LIFETIME 30 дней временное решение на время разработки
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'AUTH_HEADER_TYPES': ('Bearer',),

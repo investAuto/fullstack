@@ -1,11 +1,12 @@
-from datetime import date
 import os
+from datetime import date
 from typing import Dict
 
 import requests
 from celery import shared_task
-from car_rent_invest.models import UserRent
 from django.db import models
+
+from car_rent_invest.models import UserRent
 
 
 def _get_gdegazel_id(

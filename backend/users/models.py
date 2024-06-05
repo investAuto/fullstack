@@ -88,7 +88,6 @@ class CustomUser(AbstractUser):
         ]
     )
     fullname = models.CharField(
-        # TODO Добавить валидацию для полного имени
         'Имя, Фамилия, Отчество',
         max_length=settings.NAME_MAX_LENGTH,
         validators=[

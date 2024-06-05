@@ -1,12 +1,15 @@
+from django.conf import settings
 from django.db.models import Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from api.permissions import IsAuthenticatedOrAdminOrMechanic
 from api.car_serializers import (
-    CarMainPageSerializer, CarSerializer, UserRentSerializer
+    CarMainPageSerializer,
+    CarSerializer,
+    UserRentSerializer
 )
+from api.permissions import IsAuthenticatedOrAdminOrMechanic
 from api.technical_services_serializers import (
     CarTechnicalServicePhotoSerializer,
     CarTechnicalServiceSerializer,
@@ -57,19 +60,19 @@ class CarTechnicalServiceViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrAdminOrMechanic]
 
     def get_serializer_class(self):
-        """Выбирает сериализатор, в зависимости от метода запроса."""
+        '''Выбирает сериализатор, в зависимости от метода запроса.'''
         if self.request.method == 'GET':
             return self.serializer_class
         return CreateCarTechnicalServiceSerializer
 
     def get_queryset(self):
         '''Получаем сервисы автомобиля.'''
-        # TODO убрать хардкод
-        # TODO попробовать перенести обработку ошибок в сериализатор
         if self.request.user.is_client and self.action == 'list':
-            return self.queryset.filter(author=self.request.user)[0:5]
+            return self.queryset.filter(
+                author=self.request.user
+            )[:settings.NUMBER_OF_SERVICES_FOR_CLIENT]
         elif self.action == 'list':
-            return self.queryset[0:10]
+            return self.queryset[:settings.NUMBER_OF_SERVICES_FOR_ADMIN]
         return self.queryset
 
     @action(

@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.urls import include, path
 
 from car_rent_invest.views import set_distance
-
 from notifications.views import send_notification
 
 urlpatterns = [
