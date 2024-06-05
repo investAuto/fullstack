@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
-from notifications.tasks import create_emails
+from notifications.tasks import create_send_email
 
 
 @csrf_exempt
@@ -11,7 +11,7 @@ from notifications.tasks import create_emails
 @permission_classes([IsAdminUser])
 def send_notification(request):
     if request.method == 'GET':
-        create_emails.delay()
+        create_send_email.delay()
         return JsonResponse(
             {"detail": 'success'}, status=status.HTTP_202_ACCEPTED
         )

@@ -1,11 +1,16 @@
 from datetime import date
+import os
+from typing import Dict
 
 import requests
 from celery import shared_task
 from car_rent_invest.models import UserRent
+from django.db import models
 
 
-def _get_gdegazel_id(rents, all_autos_json):
+def _get_gdegazel_id(
+    rents: models.QuerySet[UserRent], all_autos_json: Dict[str, Dict]
+) -> Dict[str, str]:
     '''Принимаем список аренд и всех автомобилей в формате json и
     возвращаем словарь с id в gdegazel и гос. номерами автомобилей из базы
     если эти автомобили зарегистрированы на сайте gdegazel
@@ -18,7 +23,9 @@ def _get_gdegazel_id(rents, all_autos_json):
     return cars_obj
 
 
-def _update_rent_distance(cars_obj, cookies=''):
+def _update_rent_distance(
+    cars_obj: Dict[str, Dict], cookies: str = ''
+) -> None:
     '''Принимает словарь с id в gdegazel и гос. номерами автомобилей из базы
     и cookies, делает запросы на сайт gdegazel по каждому автомобилю
     получает пройденное расстояние за весь период аренды
@@ -31,9 +38,12 @@ def _update_rent_distance(cars_obj, cookies=''):
 
         response = requests.get(
             # запрос для получения одного автомобиля
-            f'https://gdegazel.ru/gps/way.php?id={id_in_gdegazel}'
-            f'&from={str(cyrrent_rent.start_rent)}+00%3A00%3A00'
-            f'&till={str(date.today())}+23%3A59%3A59',
+            '{}way.php?id={}&from={}+00%3A00%3A00&till={}+23%3A59%3A59'.format(
+                os.getenv('GDEGAZEL_URL'),
+                id_in_gdegazel,
+                str(cyrrent_rent.start_rent),
+                str(date.today())
+            ),
             cookies=cookies
         )
 
@@ -47,7 +57,7 @@ def _update_rent_distance(cars_obj, cookies=''):
 
 
 @shared_task
-def get_distance(cookie_value):
+def get_distance(cookie_value: str) -> str:
     '''Получаем даныне всех автомобилей с сайта gdegazel,
     если запрос выполнился успешно, делаем запрос за расстояниями
     которые прошли автомобили и обновляем данные в нашей базе.
@@ -57,7 +67,7 @@ def get_distance(cookie_value):
     }
     response = requests.get(
         # запрос для получения всех автомобилей
-        'https://gdegazel.ru/gps/gps.php?uid=2386&v=20210208',
+        '{}gps.php?uid=2386&v=20210208'.format(os.getenv('GDEGAZEL_URL')),
         cookies=cookies
     )
     if response.status_code == 200:
