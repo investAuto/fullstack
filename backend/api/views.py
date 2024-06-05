@@ -4,13 +4,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.permissions import IsAuthenticatedOrAdminOrMechanic
-from api.serializers import (
-    CarMainPageSerializer,
-    CarSerializer,
+from api.car_serializers import (
+    CarMainPageSerializer, CarSerializer, UserRentSerializer
+)
+from api.technical_services_serializers import (
     CarTechnicalServicePhotoSerializer,
     CarTechnicalServiceSerializer,
-    CreateCarTechnicalServiceSerializer,
-    UserRentSerializer
+    CreateCarTechnicalServiceSerializer
 )
 from car.models import Car, CarTechnicalService
 from car_rent_invest.models import UserRent

@@ -1,36 +1,12 @@
 from datetime import date, timedelta
-
-from django.contrib.auth import get_user_model
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from car.models import (
-    Car,
-    CarPhoto,
-    CarTechnicalService,
-    CarVideo,
-    TechnicalService,
-    TechnicalServicePhoto
+    Car, CarTechnicalService, TechnicalService, TechnicalServicePhoto
 )
-from car_rent_invest.models import UserRent
-
-User = get_user_model()
-
-
-class CarPhotoSerializer(serializers.ModelSerializer):
-    '''Для вывода нескольких фото.'''
-    class Meta:
-        model = CarPhoto
-        fields = ('photo', 'car')
-
-
-class CarVideoSerializer(serializers.ModelSerializer):
-    '''Для вывода нескольких видео.'''
-    class Meta:
-        model = CarVideo
-        fields = ('video', 'car')
 
 
 class CarTechnicalServicePhotoSerializer(serializers.ModelSerializer):
@@ -48,18 +24,7 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
     '''
     service = serializers.CharField(source='technical_service.name')
     car = serializers.CharField(source='car.name')
-    # cats = serializers.StringRelatedField(many=True, read_only=True)
     photos = CarTechnicalServicePhotoSerializer(many=True)
-
-    def create_new_service(self, author, service, car, comment):
-
-        return CarTechnicalService.objects.create(
-            author=author,
-            technical_service=service,
-            scheduled_date=date.today() + timedelta(days=service.periodicity),
-            comment=comment,
-            car=car
-        )
 
     @transaction.atomic
     def create(self, validated_data):
@@ -97,11 +62,12 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
             current_service.date_service = date.today()
             current_service.save()
 
-        self.create_new_service(
-            self.context.get('request').user,
-            service,
-            car,
-            validated_data.get('comment')
+        CarTechnicalService.objects.create(
+            author=self.context.get('request').user,
+            technical_service=service,
+            scheduled_date=date.today() + timedelta(days=service.periodicity),
+            comment=validated_data.get('comment'),
+            car=car
         )
 
         for photo_data in photos:
@@ -112,6 +78,7 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
+        '''Обновление технического сервиса.'''
         validated_data.pop('technical_service')
         validated_data.pop('car')
         photos = validated_data.pop('photos')
@@ -170,7 +137,6 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
         service = TechnicalService.objects.get(
             name=data['technical_service']['name']
         )
-        # TODO дублирование кода
         scheduled_car_service = CarTechnicalService.objects.filter(
             car__name=data['car']['name'],
             scheduled_date=date.today() + timedelta(days=service.periodicity),
@@ -210,88 +176,3 @@ class CarTechnicalServiceSerializer(serializers.ModelSerializer):
             'service',
             'photos'
         )
-
-
-class CarMainPageSerializer(serializers.ModelSerializer):
-    '''Для вывода карточек автомобилей на главной страцицы.'''
-    photo = serializers.SerializerMethodField()
-    hide = serializers.CharField(source='card.hide')
-
-    def get_photo(self, obj):
-        '''Получаем первое фото которое отмечено как is_preview в базе
-        или первое фото'''
-        request = self.context.get('request')
-        preview_photo = obj.photos.filter(
-            is_preview=True
-        ).first()
-        if preview_photo:
-            return request.build_absolute_uri(preview_photo.photo.url)
-        elif len(obj.photos.all()):
-            return request.build_absolute_uri(obj.photos.all()[0].photo.url)
-
-    class Meta:
-        model = Car
-        fields = (
-            'id',
-            'photo',
-            'name',
-            'short_description',
-            'price',
-            'daily_rent',
-            'hide'
-        )
-
-
-class CarSerializer(serializers.ModelSerializer):
-    '''Получение информации по карточке автомобиля.'''
-    # TODO Можно просто вывести список видио и фото в одном списке
-    photos = CarPhotoSerializer(many=True, read_only=True)
-    videos = CarVideoSerializer(many=True, read_only=True)
-
-    def to_representation(self, instance):
-        '''Добавляем техническое обслуживание в ответ если пользователь
-        авторизован и этот автомобиль арендует он.'''
-        representation = super().to_representation(instance)
-        request = self.context.get('request')
-        current_user_rents = []
-        if request.user.is_authenticated:
-            current_user_rents = instance.user_rent.filter(
-                user=request.user, complited=False
-            )
-        if current_user_rents:
-            representation['services'] = CarTechnicalServiceSerializer(
-                instance.car_technical_services, many=True).data
-        return representation
-
-    class Meta:
-        model = Car
-        fields = (
-            'id',
-            'photos',
-            'videos',
-            'name',
-            'description',
-            'price',
-            'daily_rent'
-        )
-
-
-class UserRentSerializer(serializers.ModelSerializer):
-    '''Получение информации об арендованных автомобилях,
-    что бы отобразить их в профиле пользователя.'''
-    # TODO Какая информация ещё может здесь пригодиться
-    car_name = serializers.CharField(source='car.name')
-    car_photo = serializers.SerializerMethodField()
-
-    def get_car_photo(self, obj):
-        '''Получаем первое фото которое отмечено как is_preview в базе'''
-        request = self.context.get('request')
-        photo = obj.car.photos.filter(
-            is_preview=True
-        ).first()
-        if photo:
-            return request.build_absolute_uri(photo.photo.url)
-
-    class Meta:
-        model = UserRent
-        fields = ('start_rent', 'end_rent', 'car_name', 'car_photo')
