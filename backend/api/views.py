@@ -37,7 +37,6 @@ class CarViewSet(viewsets.ReadOnlyModelViewSet):
         detail=False,
         methods=['GET'],
         permission_classes=[IsAuthenticatedOrAdminOrMechanic]
-        # permission_classes=[AllowAny]
     )
     def my_rents(self, request):
         '''Получаем список арендованных автомобилей принадлежащие пользователю.

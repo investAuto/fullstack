@@ -30,7 +30,6 @@ def _update_rent_distance(cars_obj, cookies=''):
         ).last()
 
         response = requests.get(
-            # TODO проверить как будет работать сделать запрос
             # запрос для получения одного автомобиля
             f'https://gdegazel.ru/gps/way.php?id={id_in_gdegazel}'
             f'&from={str(cyrrent_rent.start_rent)}+00%3A00%3A00'
@@ -66,7 +65,7 @@ def get_distance(cookie_value):
         all_autos_json = response.json()
         cars_obj = _get_gdegazel_id(rents, all_autos_json)
         _update_rent_distance(cars_obj, cookies)
-        print('Запрос прошёл без ошибок')
+        return 'Запрос прошёл без ошибок'
     else:
         print('Ошибка:', response.status_code)
         return 'Ошибка на стороннем API'

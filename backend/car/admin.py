@@ -65,7 +65,6 @@ admin.site.register(TechnicalService)
 class CarTechnicalServiceAdmin(admin.ModelAdmin):
     inlines = [
         PhotoTechnicalServiceInline
-        # , VideoTechnicalServiceInline
     ]
     list_display = (
         'id',

@@ -10,7 +10,6 @@ User = get_user_model()
 
 class UserRent(models.Model):
     '''Модель аренды связанная с пользователем.'''
-    # TODO подумать на счёт связей пользователей и аренды
     car = models.ForeignKey(
         Car,
         verbose_name='Машина',
@@ -64,23 +63,7 @@ class UserRent(models.Model):
         )
 
 
-# @receiver(models.signals.post_save, sender=UserRent)
-# def close_previous_rents(sender, instance, **kwargs):
-#     '''Меняем статус complited у аренд которые были завершены до последней
-#     открытой.'''
-#     # TODO над этим нужно подумать как это лучше сделать
-#     UserRent.objects.filter(
-#         user=instance.user,
-#         car=instance.car,
-#         complited=False
-#     ).exclude(
-#         id=instance.id
-#     ).update(
-#         complited=True
-#     )
-
-
-'''TODO Модели инвестиций в данный момент не используются
+''' Модели инвестиций в данный момент не используются
 и могут пригодиться в будущем поэтому пока удалять их не буду'''
 # class Investment(models.Model):
 #     '''Основная модель аренды инвестиции.'''

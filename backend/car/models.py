@@ -174,7 +174,7 @@ class CarPhoto(models.Model):
 
 @ receiver(models.signals.pre_delete, sender=CarPhoto)
 def car_photo_delete(sender, instance, **kwargs):
-    'Удаляем изображение авто из хранилища при удалении обьекта CarPhoto'
+    '''Удаляем изображение авто из хранилища при удалении обьекта CarPhoto'''
     instance.photo.delete(False)
 
 
@@ -226,7 +226,7 @@ class CarTechnicalService(models.Model):
 
 
 class TechnicalServicePhoto(models.Model):
-    'Фото связанное с конкретным техническим обслуживание автомобиля'
+    '''Фото связанное с конкретным техническим обслуживание автомобиля'''
     photo = models.ImageField(
         'Фото', upload_to='technical_services/images/', unique=True)
     service = models.ForeignKey(
@@ -238,5 +238,6 @@ class TechnicalServicePhoto(models.Model):
 
 @receiver(models.signals.pre_delete, sender=TechnicalServicePhoto)
 def technical_photo_delete(sender, instance, **kwargs):
-    '''Удаляем изображение авто из хранилища при удалении обьекта CarPhoto'''
+    '''Удаляем изображение авто из хранилища
+    при удалении обьекта TechnicalServicePhoto'''
     instance.photo.delete(False)

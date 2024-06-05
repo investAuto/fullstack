@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 class GetUserTest(APITestCase):
-    """Тесты для получения автомобиля"""
+    '''Тесты для получения пользователя'''
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user(

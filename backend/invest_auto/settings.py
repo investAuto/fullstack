@@ -36,14 +36,12 @@ STATUS_LENGTH = 17
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-# TODO почистить settings от колишнех комментариев
 
 SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = os.getenv('DEBUG', '').lower() == 'true'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
-# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -133,22 +131,14 @@ USE_L10N = True
 
 USE_TZ = True
 
-# STATIC_URL = '/static/'
 
-
-# TODO нужно почистить
 DJOSER = {
-    # 'HIDE_USER': False,
     'LOGIN_FIELD': 'phone',
     'PERMISSIONS': {
-        # 'user': ['api.permissions.IsOwnerOrReadOnly'],
-        'user_list': ['rest_framework.permissions.IsAdminUser'],
+        'user_list': ['api.permissions.IsAuthenticatedOrAdminOrMechanic'],
     },
     'SERIALIZERS': {
         'user': 'users.serializers.CustomUserSerializer',
-        # 'user_create': 'users.serializers.CustomUserCreateSerializer',
-        # 'current_user': 'users.serializers.CustomUserSerializer',
-        # 'user_list': 'users.serializers.CustomUserSerializer',
     }
 }
 
@@ -167,12 +157,9 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     # TODO ACCESS_TOKEN_LIFETIME 30 дней временное решение на время разработки
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
-# TODO Потом нужно будет убрать его отсюда
-# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-# Указываем директорию, в которую будут сохраняться файлы писем:
-# EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST', '')

@@ -10,6 +10,7 @@ from car.models import CarTechnicalService
 @ shared_task
 def create_emails():
     # TODO как декомпозировать эту функцию
+    # TODO отправить файлы отсюда в .env 
     '''Создаёт и отправляет сообщение на почту sms target'''
     # формат отправки сообщения Login;psw;sender;phone;mes
     # Login - в API рассылке берём из окружения
@@ -59,4 +60,4 @@ def create_emails():
         recipient_list=['invest_auto@inbox.ru'],
         fail_silently=True,
     )
-    return 'Это сообщение из tasks'
+    return 'Email отправлен'
