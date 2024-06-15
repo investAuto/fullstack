@@ -27,8 +27,8 @@ class TechnicalService(models.Model):
         ])
 
     class Meta:
-        verbose_name = 'Техническое обслуживание.'
-        verbose_name_plural = 'Технические обслуживания'
+        verbose_name = 'Oбслуживание'
+        verbose_name_plural = 'Oбслуживания'
         default_related_name = 'technical_services'
 
     def __str__(self):
@@ -202,17 +202,18 @@ class CarTechnicalService(models.Model):
         verbose_name='Техническое обслуживание.'
     )
     date_service = models.DateField(
-        'Дата технического обслуживания.', null=True)
+        'Дата выполнения', null=True)
     scheduled_date = models.DateField(
-        'Запланированная дата обслуживания.'
+        'Запланированная дата'
     )
     comment = models.TextField(
-        'Комментарий к обслуживанию.', blank=True, default='Без комментариев.')
+        'Комментарий к обслуживанию.', blank=True, default='Без комментариев.'
+    )
 
     class Meta:
         ordering = ('-date_service',)
-        verbose_name = 'Обслуживание'
-        verbose_name_plural = 'Обслуживания'
+        verbose_name = 'Техническое обслуживание'
+        verbose_name_plural = 'Технические обслуживания'
         default_related_name = 'car_technical_services'
         constraints = [
             models.UniqueConstraint(

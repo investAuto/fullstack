@@ -53,21 +53,28 @@ class CarAdmin(admin.ModelAdmin):
     ]
     list_display = (
         'name',
-        'license_plate'
+        'license_plate',
+        'image_tag'
     )
     exclude = ['technical_services']
-
+    @admin.display(description='Изображение')
+    def image_tag(self, obj):
+        """Получаем изображение связанного авто."""
+        if obj.photos.all():
+            return format_html(
+                '<img src="{}" width="80" height="50" />'.format(
+                    obj.photos.all()[0].photo.url)
+            )
+        return 'Не найдено'
 
 admin.site.register(TechnicalService)
 
 
 @admin.register(CarTechnicalService)
 class CarTechnicalServiceAdmin(admin.ModelAdmin):
-    inlines = [
-        PhotoTechnicalServiceInline
-    ]
+    inlines = (PhotoTechnicalServiceInline,)
     list_display = (
-        'id',
+        'author',
         'car',
         'technical_service',
         'date_service',
@@ -75,6 +82,10 @@ class CarTechnicalServiceAdmin(admin.ModelAdmin):
         'comment',
         'image_tag'
     )
+    list_editable = ('scheduled_date',)
+    list_filter = ('car',)
+    search_fields = ('car__name', 'technical_service__name')
+    list_display_links = ('car',)
 
     @admin.display(description='Изображение')
     def image_tag(self, obj):

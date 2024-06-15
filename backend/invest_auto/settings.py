@@ -44,7 +44,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = os.getenv('DEBUG', '').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -53,7 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # # NOTE corsheaders для обработки запросов с фронта
+    'corsheaders',
     'rest_framework',
     'colorfield',
     'djoser',
@@ -66,6 +68,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # # NOTE corsheaders для обработки запросов с фронта
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -175,6 +179,12 @@ EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', '').lower() == 'true'
 STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+
+# NOTE Возможно это только в разработке
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',  # Замените на URL фронтенда
+]
+CORS_URLS_REGEX = r'^/api/.*$'
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")

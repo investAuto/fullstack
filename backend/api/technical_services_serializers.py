@@ -82,7 +82,8 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        '''Обновление технического сервиса.'''
+        '''Обновление технического сервиса.
+        Находим все фото текущего сервиса удаляем их потом добавляем заново.'''
         validated_data.pop('technical_service')
         validated_data.pop('car')
         photos = validated_data.pop('photos')
@@ -178,5 +179,6 @@ class CarTechnicalServiceSerializer(serializers.ModelSerializer):
             'date_service',
             'car',
             'service',
-            'photos'
+            'photos',
+            'comment'
         )

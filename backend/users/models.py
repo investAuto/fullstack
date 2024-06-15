@@ -90,6 +90,7 @@ class CustomUser(AbstractUser):
     fullname = models.CharField(
         'Имя, Фамилия, Отчество',
         max_length=settings.NAME_MAX_LENGTH,
+        help_text='Должно быть минимум имя и фамилия.',
         validators=[
             RegexValidator(
                 r'^[А-ЯЁ][а-яё]*\s+[А-ЯЁ][а-яё]*(\s+[А-ЯЁ][а-яё]*)*$',

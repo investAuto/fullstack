@@ -87,16 +87,19 @@ class UserRentSerializer(serializers.ModelSerializer):
     что бы отобразить их в профиле пользователя.'''
     car_name = serializers.CharField(source='car.name')
     car_photo = serializers.SerializerMethodField()
-
+# TODO вынести функцию для получения фото
     def get_car_photo(self, obj):
-        '''Получаем первое фото которое отмечено как is_preview в базе'''
+        '''Получаем первое фото которое отмечено как is_preview в базе
+        или первое фото'''
         request = self.context.get('request')
-        photo = obj.car.photos.filter(
+        preview_photo = obj.car.photos.filter(
             is_preview=True
         ).first()
-        if photo:
-            return request.build_absolute_uri(photo.photo.url)
+        if preview_photo:
+            return request.build_absolute_uri(preview_photo.photo.url)
+        elif len(obj.car.photos.all()):
+            return request.build_absolute_uri(obj.car.photos.all()[0].photo.url)
 
     class Meta:
         model = UserRent
-        fields = ('start_rent', 'end_rent', 'car_name', 'car_photo')
+        fields = ('car_id', 'start_rent', 'end_rent', 'car_name', 'car_photo')
