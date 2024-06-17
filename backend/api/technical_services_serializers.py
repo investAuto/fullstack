@@ -13,6 +13,13 @@ from car.models import (
 )
 
 
+class TechnicalServiceSerializer(serializers.ModelSerializer):
+    '''Для работы с техничискими обслуживаниями.'''
+    class Meta:
+        model = TechnicalService
+        fields = ('id', 'name')
+
+
 class CarTechnicalServicePhotoSerializer(serializers.ModelSerializer):
     '''Для работы с фотограффиями технического обслуживания.'''
     photo = Base64ImageField(required=True)
@@ -36,7 +43,8 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
         находим последний невыполненный сервис,
         если мы его не нашли то создаём сервис с текущей датой выполнения,
         если нашли то добавляем ему дату выполнения и ставим статус выполнено,
-        после этого создаём запланированный сервис.
+        после этого если есть периодичность выполнени,
+        создаём запланированный сервис.
         '''
         photos = validated_data.pop('photos')
         service = TechnicalService.objects.get(
@@ -65,14 +73,16 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
             current_service.complited = True
             current_service.date_service = date.today()
             current_service.save()
-
-        CarTechnicalService.objects.create(
-            author=self.context.get('request').user,
-            technical_service=service,
-            scheduled_date=date.today() + timedelta(days=service.periodicity),
-            comment=validated_data.get('comment'),
-            car=car
-        )
+        if service.periodicity:
+            CarTechnicalService.objects.create(
+                author=self.context.get('request').user,
+                technical_service=service,
+                scheduled_date=(
+                    date.today() + timedelta(days=service.periodicity)
+                ),
+                comment=validated_data.get('comment'),
+                car=car
+            )
 
         for photo_data in photos:
             TechnicalServicePhoto.objects.create(
@@ -87,7 +97,6 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
         validated_data.pop('technical_service')
         validated_data.pop('car')
         photos = validated_data.pop('photos')
-
         instance.photos.all().delete()
 
         photos = [
@@ -142,11 +151,15 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
         service = TechnicalService.objects.get(
             name=data['technical_service']['name']
         )
-        scheduled_car_service = CarTechnicalService.objects.filter(
-            car__name=data['car']['name'],
-            scheduled_date=date.today() + timedelta(days=service.periodicity),
-            technical_service__name=data['technical_service']['name']
-        ).exists()
+        scheduled_car_service = (
+            service.periodicity and CarTechnicalService.objects.filter(
+                car__name=data['car']['name'],
+                scheduled_date=(
+                    date.today() + timedelta(days=service.periodicity)
+                ),
+                technical_service__name=data['technical_service']['name']
+            ).exists()
+        )
         car_service_created_today = CarTechnicalService.objects.filter(
             car__name=data['car']['name'],
             date_service=date.today(),

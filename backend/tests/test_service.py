@@ -107,7 +107,7 @@ class GetServiceTest(APITestCase):
 
     @staticmethod
     def get_service_data(self, photos, comment='test_comment'):
-        '''Получаем токен для авторизации пользователя'''
+        '''Получаем данные для конкретного сервиса автомобиля'''
         return {
             'car': self.car1.name,
             'service': self.service1.name,
@@ -218,3 +218,16 @@ class GetServiceTest(APITestCase):
             format='json'
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_technical_services_by_auth_user(self):
+        '''Тест на получение всех обслуживаний для получения имён
+        авторизованным пользователем.'''
+        response = self.client.get(f'{self.url}get_services/')
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+    def test_get_technical_services_by_not_auth_user(self):
+        '''Тест на получение всех обслуживаний для получения имён
+        неавторизованным пользователем.'''
+        response = self.unauth_client.get(f'{self.url}get_services/')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

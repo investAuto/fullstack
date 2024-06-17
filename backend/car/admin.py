@@ -57,6 +57,7 @@ class CarAdmin(admin.ModelAdmin):
         'image_tag'
     )
     exclude = ['technical_services']
+
     @admin.display(description='Изображение')
     def image_tag(self, obj):
         """Получаем изображение связанного авто."""
@@ -66,6 +67,7 @@ class CarAdmin(admin.ModelAdmin):
                     obj.photos.all()[0].photo.url)
             )
         return 'Не найдено'
+
 
 admin.site.register(TechnicalService)
 

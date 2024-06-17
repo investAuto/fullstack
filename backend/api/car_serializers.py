@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from api.technical_services_serializers import CarTechnicalServiceSerializer
+from api.utils import get_car_photo
 from car.models import Car, CarPhoto, CarVideo
 from car_rent_invest.models import UserRent
 
@@ -25,16 +26,8 @@ class CarMainPageSerializer(serializers.ModelSerializer):
     hide = serializers.CharField(source='card.hide')
 
     def get_photo(self, obj):
-        '''Получаем первое фото которое отмечено как is_preview в базе
-        или первое фото'''
-        request = self.context.get('request')
-        preview_photo = obj.photos.filter(
-            is_preview=True
-        ).first()
-        if preview_photo:
-            return request.build_absolute_uri(preview_photo.photo.url)
-        elif len(obj.photos.all()):
-            return request.build_absolute_uri(obj.photos.all()[0].photo.url)
+        '''Получаем фото автомобиля для вывода на главную.'''
+        return get_car_photo(self.context.get('request'), obj)
 
     class Meta:
         model = Car
@@ -87,18 +80,10 @@ class UserRentSerializer(serializers.ModelSerializer):
     что бы отобразить их в профиле пользователя.'''
     car_name = serializers.CharField(source='car.name')
     car_photo = serializers.SerializerMethodField()
-# TODO вынести функцию для получения фото
+
     def get_car_photo(self, obj):
-        '''Получаем первое фото которое отмечено как is_preview в базе
-        или первое фото'''
-        request = self.context.get('request')
-        preview_photo = obj.car.photos.filter(
-            is_preview=True
-        ).first()
-        if preview_photo:
-            return request.build_absolute_uri(preview_photo.photo.url)
-        elif len(obj.car.photos.all()):
-            return request.build_absolute_uri(obj.car.photos.all()[0].photo.url)
+        '''Получаем фото автомобиля для аренды'''
+        return get_car_photo(self.context.get('request'), obj.car)
 
     class Meta:
         model = UserRent

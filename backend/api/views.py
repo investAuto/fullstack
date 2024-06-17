@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db.models import Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.car_serializers import (
@@ -13,9 +14,10 @@ from api.permissions import IsAuthenticatedOrAdminOrMechanic
 from api.technical_services_serializers import (
     CarTechnicalServicePhotoSerializer,
     CarTechnicalServiceSerializer,
-    CreateCarTechnicalServiceSerializer
+    CreateCarTechnicalServiceSerializer,
+    TechnicalServiceSerializer
 )
-from car.models import Car, CarTechnicalService
+from car.models import Car, CarTechnicalService, TechnicalService
 from car_rent_invest.models import UserRent
 
 
@@ -83,5 +85,17 @@ class CarTechnicalServiceViewSet(viewsets.ModelViewSet):
         serializer = CarTechnicalServicePhotoSerializer(
             self.get_object().photos.all(),
             many=True
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(
+        detail=False,
+        methods=['GET'],
+        permission_classes=[IsAuthenticated]
+    )
+    def get_services(self, request):
+        '''Получаем все технические обслуживания для получения имён.'''
+        serializer = TechnicalServiceSerializer(
+            TechnicalService.objects.all(), many=True
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
