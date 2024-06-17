@@ -87,6 +87,9 @@ class GetRentTest(APITestCase):
         self.assertEqual(response.data[0]['start_rent'], '2024-05-14')
         self.assertEqual(response.data[0]['end_rent'], '2024-05-25')
         self.assertEqual(response.data[0]['car_name'], self.car1.name)
+        self.assertEqual(
+            response.data[0]['car_license_plate'], self.car1.license_plate
+        )
         self.assertIsNotNone(response.data[0]['car_photo'])
 
     def test_get_my_rent_by_unauth_user(self):

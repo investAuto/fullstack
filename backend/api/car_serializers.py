@@ -79,6 +79,7 @@ class UserRentSerializer(serializers.ModelSerializer):
     '''Получение информации об арендованных автомобилях,
     что бы отобразить их в профиле пользователя.'''
     car_name = serializers.CharField(source='car.name')
+    car_license_plate = serializers.CharField(source='car.license_plate')
     car_photo = serializers.SerializerMethodField()
 
     def get_car_photo(self, obj):
@@ -87,4 +88,12 @@ class UserRentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserRent
-        fields = ('car_id', 'start_rent', 'end_rent', 'car_name', 'car_photo')
+        fields = (
+            'car_id',
+            'start_rent',
+            'end_rent',
+            'car_name',
+            'car_photo',
+            'car_photo',
+            'car_license_plate'
+        )

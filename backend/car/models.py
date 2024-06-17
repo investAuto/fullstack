@@ -27,6 +27,7 @@ class TechnicalService(models.Model):
         ])
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Oбслуживание'
         verbose_name_plural = 'Oбслуживания'
         default_related_name = 'technical_services'
