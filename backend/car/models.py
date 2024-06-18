@@ -208,7 +208,10 @@ class CarTechnicalService(models.Model):
         'Запланированная дата'
     )
     comment = models.TextField(
-        'Комментарий к обслуживанию.', blank=True, default='Без комментариев.'
+        'Комментарий к обслуживанию.',
+        blank=True,
+        null=True,
+        default='Без комментариев.'
     )
 
     class Meta:

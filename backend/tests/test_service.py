@@ -109,7 +109,7 @@ class GetServiceTest(APITestCase):
     def get_service_data(self, photos, comment='test_comment'):
         '''Получаем данные для конкретного сервиса автомобиля'''
         return {
-            'car': self.car1.name,
+            'car': self.car1.license_plate ,
             'service': self.service1.name,
             'photos': photos,
             'comment': comment

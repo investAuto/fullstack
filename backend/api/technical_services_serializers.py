@@ -34,7 +34,8 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
     связанного с автомобилем.
     '''
     service = serializers.CharField(source='technical_service.name')
-    car = serializers.CharField(source='car.name')
+    # car = serializers.CharField(source='car.name')
+    car = serializers.CharField(source='car.license_plate')
     photos = CarTechnicalServicePhotoSerializer(many=True)
 
     @transaction.atomic
@@ -51,7 +52,7 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
             name=validated_data.pop('technical_service').get('name')
         )
         car = Car.objects.get(
-            name=validated_data.pop('car').get('name')
+            license_plate=validated_data.pop('car').get('license_plate')
         )
         current_service = CarTechnicalService.objects.filter(
             author=self.context.get('request').user,
@@ -120,9 +121,9 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
         )
 
     def validate_car(self, value):
-        if not Car.objects.filter(name=value).exists():
+        if not Car.objects.filter(license_plate=value).exists():
             raise serializers.ValidationError(
-                'Авто с таким названием не существует'
+                'Авто с таким гос.номером не существует.'
             )
         return value
 
@@ -153,7 +154,7 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
         )
         scheduled_car_service = (
             service.periodicity and CarTechnicalService.objects.filter(
-                car__name=data['car']['name'],
+                car__license_plate=data['car']['license_plate'],
                 scheduled_date=(
                     date.today() + timedelta(days=service.periodicity)
                 ),
@@ -161,7 +162,7 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
             ).exists()
         )
         car_service_created_today = CarTechnicalService.objects.filter(
-            car__name=data['car']['name'],
+            car__license_plate=data['car']['license_plate'],
             date_service=date.today(),
             technical_service__name=data['technical_service']['name']
         ).exists()
