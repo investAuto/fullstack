@@ -1,6 +1,8 @@
 // @ts-nocheck
+import React from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { TinyColor } from '@ctrl/tinycolor';
+import { Preloader } from '../../components/preloader/preloader';
 import {
     Button,
     ConfigProvider,
@@ -32,6 +34,10 @@ const contentStyle: React.CSSProperties = {
 
 export const CarPage = () => {
     const car = useLoaderData();
+
+    if (!car) {
+        return <Preloader />;
+    }
 
     return (
         <>

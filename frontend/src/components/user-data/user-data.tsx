@@ -1,15 +1,21 @@
 // @ts-nocheck
 import { useContext, useEffect } from 'react';
 import { UsersContext } from '../../context/user-context/user-context';
+import { useAuth } from '../../context/auth-provider';
+import { Preloader } from '../preloader/preloader';
 
 export const UserDataComponent = () => {
     // TODO это временный компонент для получения пользователя
+
     const { user, setUser } = useContext(UsersContext);
-    useEffect(() => {
-        setUser();
-    }, []);
-    if (!user?.id) {
-        return <h1>Подождите...</h1>;
+    const { token } = useAuth();
+    // useEffect(() => {
+    //     {
+    //         token && setUser();
+    //     }
+    // }, []);
+    if (!user?.id || !token) {
+        return <Preloader />;
     }
     return (
         <div style={{ color: 'black' }}>

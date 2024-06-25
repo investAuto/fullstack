@@ -12,6 +12,7 @@ import {
     IS_AUTH,
     LOADING,
     SET_USER,
+    SET_TOKEN,
     DELETE_CURRENT_USER,
 } from '../types';
 import { UsersContext } from './user-context';
@@ -22,6 +23,7 @@ export const UsersState = ({ children }) => {
         user: {},
         data: [],
         loading: false,
+        token: '',
     };
     const [usersState, usersDispatch] = useReducer(usersReducer, initialState);
     const [authState, authDispatch] = useReducer(authReducer, {

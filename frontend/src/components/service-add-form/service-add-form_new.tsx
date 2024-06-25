@@ -13,6 +13,7 @@ import {
     UploadFile,
     FormProps,
 } from 'antd';
+import { Preloader } from '../../components/preloader/preloader';
 
 import { useAuth } from '../../context/auth-provider';
 import { CarAPI } from '../../api/cars-api';
@@ -95,7 +96,7 @@ export const AddServiceForm: React.FC = () => {
     };
 
     if (!services || !services.length || !rents || !rents.length) {
-        return <h1>Подождите идёт загрузка....</h1>;
+        return <Preloader />;
     }
 
     const getBase64 = (file: FileType): Promise<string> =>

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import {
     Button,
     Form,
@@ -17,6 +18,7 @@ import {
 import { useAuth } from '../../context/auth-provider';
 import { CarAPI } from '../../api/cars-api';
 import { FieldType, FileType, Rents, Service } from './service-add-form-types';
+import { Preloader } from '../../components/preloader/preloader';
 
 const { Title } = Typography;
 
@@ -37,7 +39,7 @@ const normFile = (e: any) => {
 export const AddServiceForm: React.FC = () => {
     const { token } = useAuth();
     const [form] = Form.useForm();
-
+    let navigate = useNavigate();
     const [services, setServices] = useState<Service[]>(() => []);
     const [rents, setRents] = useState<Rents[]>([]);
 
@@ -84,6 +86,7 @@ export const AddServiceForm: React.FC = () => {
         console.log('Success:', values);
         setFileList([]);
         form.resetFields();
+        navigate('/user/');
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -94,7 +97,7 @@ export const AddServiceForm: React.FC = () => {
     };
 
     if (!services || !services.length || !rents || !rents.length) {
-        return <h1>Подождите идёт загрузка....</h1>;
+        return <Preloader />;
     }
 
     const getBase64 = (file: FileType): Promise<string> =>

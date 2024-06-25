@@ -5,6 +5,7 @@ import { useAuth } from '../../context/auth-provider';
 import { Button, Card, Flex, Image, Typography } from 'antd';
 import { NavLink, useLoaderData } from 'react-router-dom';
 import { CarAPI } from '../../api/cars-api';
+import { Preloader } from '../preloader/preloader';
 const { Text, Title } = Typography;
 
 const API_URL = 'http://127.0.0.1:8000/api/v1/';
@@ -41,7 +42,7 @@ export const Rents = () => {
     }, []);
 
     if (!rents) {
-        return <Text>Loading...</Text>;
+        return <Preloader />;
     }
     return (
         <div>

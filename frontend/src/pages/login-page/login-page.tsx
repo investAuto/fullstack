@@ -1,9 +1,11 @@
+// @ts-nocheck
 import React, { useEffect } from 'react';
 import type { FormProps } from 'antd';
 import { redirect, useNavigate } from 'react-router-dom';
-import { Button, Checkbox, Flex, Form, Input } from 'antd';
+import { Button, Checkbox, Flex, Form, Input, message } from 'antd';
 import { UserAPI } from '../../api/user-api';
 import { useAuth } from '../../context/auth-provider';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
 type FieldType = {
     phone?: string;
@@ -20,12 +22,17 @@ export const LoginPage: React.FC = () => {
     const [form] = Form.useForm();
     let navigate = useNavigate();
 
+    const RESPONSE_MESSAGE = message;
+    RESPONSE_MESSAGE.config({
+        top: 70,
+    });
+
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         const data = await UserAPI.login(values.phone, values.password);
-        setToken(data.access);
+        {
+            data?.access && setToken(data.access);
+        }
         console.log('Success:', values);
-        // TODO Подумать откуда беруться значения в форме
-        // form.resetFields();
     };
 
     useEffect(() => {
@@ -33,12 +40,6 @@ export const LoginPage: React.FC = () => {
             navigate('/user/', { replace: true });
         }
     }, [token, setToken]);
-    // const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    //     // setToken('this is a test token');
-    //     UserAPI.login(values.phone, values.password);
-    //     console.log('Success:', values);
-    //     return navigate('/user');
-    // };
 
     return (
         <Flex justify="center" align="center">
@@ -57,9 +58,7 @@ export const LoginPage: React.FC = () => {
                 <Form.Item<FieldType>
                     label="Phone"
                     name="phone"
-                    rules={[
-                        { required: true, message: 'Please input your phone!' },
-                    ]}
+                    rules={[{ required: true, message: 'Введите номер!' }]}
                 >
                     <Input />
                 </Form.Item>
@@ -70,7 +69,7 @@ export const LoginPage: React.FC = () => {
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your password!',
+                            message: 'Введите пароль!',
                         },
                     ]}
                 >

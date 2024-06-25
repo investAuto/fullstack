@@ -20,6 +20,7 @@ const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
 
 export const RegisterPage: React.FC = () => {
     let navigate = useNavigate();
+
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
         UserAPI.register(values.fullname, values.phone, values.password);
         console.log('Success:', values);
@@ -45,7 +46,7 @@ export const RegisterPage: React.FC = () => {
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your fullname!',
+                            message: 'Пожалуйста введите имя!',
                         },
                     ]}
                 >
@@ -55,7 +56,10 @@ export const RegisterPage: React.FC = () => {
                     label="Phone"
                     name="phone"
                     rules={[
-                        { required: true, message: 'Please input your phone!' },
+                        {
+                            required: true,
+                            message: 'Пожалуйста введите номер телефона!',
+                        },
                     ]}
                 >
                     <Input />
@@ -67,7 +71,7 @@ export const RegisterPage: React.FC = () => {
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your password!',
+                            message: 'Пожалуйста введите пароль!',
                         },
                     ]}
                 >

@@ -50,39 +50,34 @@ type Props = {
 
 const Template: React.FC<Props> = ({ children }) => {
     const { token, setToken } = useAuth();
-    // const [phoneNumber, setPhoneNumber] = useState(
-    //     localStorage.getItem('phone')
-    // );
     const { user, setUser, deleteCurrentUser } = useContext(UsersContext);
-    // useEffect(() => {
-    //     setUser();
-    // }, []);
 
     useEffect(() => {
-        // const initialPhone = localStorage.getItem('phone');
-        // setPhoneNumber(initialPhone);
         // Слушаем событие на изменение localStorage
         const handleStorageChange = (e: StorageEvent) => {
             if (e.key === 'token') {
                 setUser();
             }
         };
+        // {
+        //     token && setUser();
+        // }
         // Добавляем и удаляем слушатель событий при монтировании и демонтировании
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
 
-    // if (!user?.id || !token) {
+    // if (!user?.fullname || !token) {
     //     return <h1>Подождите...</h1>;
     // }
 
     return (
         <Layout style={layoutStyle}>
             <Header style={headerStyle}>
-                <NavLink to={'/1'} style={loginButtonStyle}>
+                {/* <NavLink to={'/1'} style={loginButtonStyle}>
                     <div>Тестовая</div>
-                </NavLink>
-                <NavLink to={'/'} style={loginButtonStyle}>
+                </NavLink> */}
+                <NavLink to={'/cars/'} style={loginButtonStyle}>
                     <div>Header</div>
                 </NavLink>
 
@@ -90,22 +85,24 @@ const Template: React.FC<Props> = ({ children }) => {
                     регистрация
                 </NavLink>
                 {user?.fullname ? (
-                    <NavLink to={'/user/'} style={loginButtonStyle}>
-                        {user.fullname}
-                    </NavLink>
+                    <>
+                        <NavLink to={'/user/'} style={loginButtonStyle}>
+                            {user.fullname}
+                        </NavLink>
+                        <NavLink
+                            to={'/logout'}
+                            style={loginButtonStyle}
+                            onClick={() => deleteCurrentUser()}
+                        >
+                            <UserOutlined /> Выйти
+                        </NavLink>
+                    </>
                 ) : (
                     <NavLink to={'login'} style={loginButtonStyle}>
                         <UserOutlined />
                         Войти
                     </NavLink>
                 )}
-                <NavLink
-                    to={'/logout'}
-                    style={loginButtonStyle}
-                    onClick={() => deleteCurrentUser()}
-                >
-                    <UserOutlined /> Выйти
-                </NavLink>
             </Header>
             <Content style={contentStyle}>{children}</Content>
             <Footer style={footerStyle}>Footer</Footer>

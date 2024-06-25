@@ -24,6 +24,7 @@ import { TestPage } from '../pages/test_page/test-page';
 import { UserPage } from '../pages/user-page/user-page';
 import { AddServiceForm } from '../components/service-add-form/service-add-form';
 import { EditServiceForm } from '../components/service-edit-form/service-edit-form';
+import { Preloader } from '../components/preloader/preloader';
 
 const Routes = () => {
     const { token } = useAuth();
@@ -43,6 +44,7 @@ const Routes = () => {
                         path="cars/"
                         element={<ListOfCars />}
                         loader={CarAPI.carsLoader}
+                        // action={Preloader}
                     />
                     <Route
                         path="cars/:carId"

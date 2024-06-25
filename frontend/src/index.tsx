@@ -45,10 +45,10 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <React.StrictMode>
-        <UsersState>
-            <AuthProvider>
+        <AuthProvider>
+            <UsersState>
                 <Routes />
-            </AuthProvider>
-        </UsersState>
+            </UsersState>
+        </AuthProvider>
     </React.StrictMode>
 );

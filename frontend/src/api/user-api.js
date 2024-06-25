@@ -21,12 +21,15 @@ export const UserAPI = {
                 return response.data;
             })
             .catch((error) => {
-                RESPONSE_MESSAGE.error('Ошибка регистрации');
-                console.error(error.message);
-                console.log(error.response.data);
-                // в error.response.data обычно содержится текст ошибки
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                if (error.response.data.phone) {
+                    RESPONSE_MESSAGE.error(error.response.data.phone);
+                } else if (error.response.data.fullname) {
+                    RESPONSE_MESSAGE.error(error.response.data.fullname);
+                } else if (error.response.data.password) {
+                    RESPONSE_MESSAGE.error(error.response.data.password);
+                } else {
+                    RESPONSE_MESSAGE.error('Ошибка регистрации');
+                }
             });
     },
     login: (phone, password) => {
@@ -38,40 +41,23 @@ export const UserAPI = {
             .then((response) => {
                 if (response.data.access) {
                     localStorage.setItem('token', response.data.access);
-                    // TODO Здесь нужно наверно добавлять данные пользователя если это необходимо или добавлять их в стате
-                    localStorage.setItem('phone', phone);
                 }
 
                 return response.data;
             })
             .catch((error) => {
-                console.error(error.message);
-                console.log(error.response.data);
-                // в error.response.data обычно содержится текст ошибки
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                RESPONSE_MESSAGE.error('Неверный логин или пароль!');
             });
     },
     getCurrentUser: () => {
         return axios
             .get(API_URL + 'users/me/')
             .then((response) => {
-                // if (response.data.access) {
-                //     localStorage.setItem('token', response.data.access);
-                //     localStorage.setItem('phone', phone);
-                // }
-
                 return response.data;
             })
             .catch((error) => {
                 console.error(error.message);
-                console.log(error.response.data);
-                // в error.response.data обычно содержится текст ошибки
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                RESPONSE_MESSAGE.error(error.message);
             });
-    },
-    getCurrentUserPhone: () => {
-        return JSON.parse(localStorage.getItem('phone'));
     },
 };
