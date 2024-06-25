@@ -76,6 +76,7 @@ admin.site.register(TechnicalService)
 class CarTechnicalServiceAdmin(admin.ModelAdmin):
     inlines = (PhotoTechnicalServiceInline,)
     list_display = (
+        'id',
         'author',
         'car',
         'technical_service',

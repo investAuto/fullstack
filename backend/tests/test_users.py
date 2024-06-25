@@ -29,7 +29,10 @@ class GetUserTest(APITestCase):
         '''Получение информации по эндпоинту 
         me для авторизованного пользоватея с токеном.'''
         response = self.client.get(self.url)
-
+        self.assertEqual(response.data['id'], self.user.id)
+        self.assertEqual(response.data['phone'], self.user.phone)
+        self.assertEqual(response.data['role'], self.user.role)
+        self.assertEqual(response.data['fullname'], self.user.fullname)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_me_unauthorized_user(self):

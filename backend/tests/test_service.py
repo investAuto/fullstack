@@ -109,7 +109,7 @@ class GetServiceTest(APITestCase):
     def get_service_data(self, photos, comment='test_comment'):
         '''Получаем данные для конкретного сервиса автомобиля'''
         return {
-            'car': self.car1.license_plate ,
+            'car': self.car1.license_plate,
             'service': self.service1.name,
             'photos': photos,
             'comment': comment
@@ -126,7 +126,9 @@ class GetServiceTest(APITestCase):
             response.data[0]['date_service'],
             str(self.car_service1.date_service)
         )
-        self.assertEqual(response.data[0]['car'], self.car1.name)
+        self.assertEqual(
+            response.data[0]['car_license_plate'], self.car1.license_plate
+            )
         self.assertEqual(
             response.data[0]['service'],
             self.car_service1.technical_service.name

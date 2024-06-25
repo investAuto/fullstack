@@ -9,7 +9,8 @@ from car.models import (
     Car,
     CarTechnicalService,
     TechnicalService,
-    TechnicalServicePhoto
+    TechnicalServicePhoto,
+    UploadPhoto
 )
 
 
@@ -20,8 +21,16 @@ class TechnicalServiceSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
+# class CarTechnicalServicePhotoSerializer(serializers.ModelSerializer):
+# TODO нужен будет если необходимо добавлять фото отдельно
+#     '''Для работы с фотограффиями технического обслуживания.'''
+#     photo = Base64ImageField(required=True)
+#     class Meta:
+#         model = TechnicalServicePhoto
+#         fields = ('id', 'service', 'photo',)
 class CarTechnicalServicePhotoSerializer(serializers.ModelSerializer):
     '''Для работы с фотограффиями технического обслуживания.'''
+
     photo = Base64ImageField(required=True)
 
     class Meta:
@@ -182,7 +191,7 @@ class CarTechnicalServiceSerializer(serializers.ModelSerializer):
     '''Для Технического обслуживания связанного с автомобилем.'''
 
     service = serializers.CharField(source='technical_service.name')
-    car = serializers.CharField(source='car.name')
+    car_license_plate = serializers.CharField(source='car.license_plate')
     photos = CarTechnicalServicePhotoSerializer(many=True)
 
     class Meta:
@@ -191,8 +200,20 @@ class CarTechnicalServiceSerializer(serializers.ModelSerializer):
             'author',
             'id',
             'date_service',
-            'car',
+            'car_license_plate',
             'service',
             'photos',
             'comment'
+        )
+
+
+class UploadPhotoSerializer(serializers.ModelSerializer):
+    '''Для работы с временными изображениями.'''
+
+    photo = Base64ImageField(required=True)
+
+    class Meta:
+        model = UploadPhoto
+        fields = (
+            'photo',
         )
