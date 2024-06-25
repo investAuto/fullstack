@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+// @ts-nocheck
+import React, { useState, useEffect, useContext } from 'react';
 import { Layout } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/auth-provider';
+import { UsersContext } from '../context/user-context/user-context';
 
 const { Header, Content, Footer } = Layout;
 
@@ -47,27 +49,32 @@ type Props = {
 };
 
 const Template: React.FC<Props> = ({ children }) => {
-    const { token } = useAuth();
-    const [phoneNumber, setPhoneNumber] = useState(
-        localStorage.getItem('phone')
-    );
+    const { token, setToken } = useAuth();
+    // const [phoneNumber, setPhoneNumber] = useState(
+    //     localStorage.getItem('phone')
+    // );
+    const { user, setUser, deleteCurrentUser } = useContext(UsersContext);
+    // useEffect(() => {
+    //     setUser();
+    // }, []);
 
     useEffect(() => {
-        const initialPhone = localStorage.getItem('phone');
-
-        setPhoneNumber(initialPhone);
-
+        // const initialPhone = localStorage.getItem('phone');
+        // setPhoneNumber(initialPhone);
         // Слушаем событие на изменение localStorage
         const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'phone') {
-                setPhoneNumber(e.newValue || '');
+            if (e.key === 'token') {
+                setUser();
             }
         };
-
         // Добавляем и удаляем слушатель событий при монтировании и демонтировании
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
-    }, [token]);
+    }, []);
+
+    // if (!user?.id || !token) {
+    //     return <h1>Подождите...</h1>;
+    // }
 
     return (
         <Layout style={layoutStyle}>
@@ -82,9 +89,9 @@ const Template: React.FC<Props> = ({ children }) => {
                 <NavLink to={'register'} style={loginButtonStyle}>
                     регистрация
                 </NavLink>
-                {phoneNumber ? (
+                {user?.fullname ? (
                     <NavLink to={'/user/'} style={loginButtonStyle}>
-                        {phoneNumber}
+                        {user.fullname}
                     </NavLink>
                 ) : (
                     <NavLink to={'login'} style={loginButtonStyle}>
@@ -92,7 +99,11 @@ const Template: React.FC<Props> = ({ children }) => {
                         Войти
                     </NavLink>
                 )}
-                <NavLink to={'/logout'} style={loginButtonStyle}>
+                <NavLink
+                    to={'/logout'}
+                    style={loginButtonStyle}
+                    onClick={() => deleteCurrentUser()}
+                >
                     <UserOutlined /> Выйти
                 </NavLink>
             </Header>

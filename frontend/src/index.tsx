@@ -26,6 +26,7 @@ import AuthProvider from './context/auth-provider';
 import { useAuth } from './context/auth-provider';
 import { ProtectedRoute } from './routes/projected-route';
 import Routes from './routes/routes';
+import { UsersState } from './context/user-context/user-state';
 
 // const router = createBrowserRouter([
 //     {
@@ -44,14 +45,10 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <React.StrictMode>
-        <AuthProvider>
-            <Routes />
-        </AuthProvider>
-        {/* <AuthProvider>
-            <Routes />
-        </AuthProvider> */}
-        {/* <UserProvider> */}
-        {/* <RouterProvider router={router} /> */}
-        {/* </UserProvider> */}
+        <UsersState>
+            <AuthProvider>
+                <Routes />
+            </AuthProvider>
+        </UsersState>
     </React.StrictMode>
 );

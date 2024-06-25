@@ -1,7 +1,10 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useAuth } from '../../context/auth-provider';
 import { Button, Card, Flex, Image, Typography } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLoaderData } from 'react-router-dom';
+import { CarAPI } from '../../api/cars-api';
 const { Text, Title } = Typography;
 
 const API_URL = 'http://127.0.0.1:8000/api/v1/';
@@ -30,23 +33,21 @@ const imgStyle: React.CSSProperties = {
 export const Rents = () => {
     const [rents, setRents] = useState<Rents[]>([]);
     useEffect(() => {
-        axios
-            .get(API_URL + 'cars/my_rents/')
-            .then((response) => {
-                return setRents(response.data);
-            })
-            .catch((error) => {
-                console.error(error.message);
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
-            });
+        const fetchRentData = async () => {
+            const rents = await CarAPI.rentsLoader();
+            setRents(rents);
+        };
+        fetchRentData();
     }, []);
+
+    if (!rents) {
+        return <Text>Loading...</Text>;
+    }
     return (
         <div>
             {rents.length ? <Title level={3}>Аренды</Title> : <></>}
             {rents.map((rent) => (
-                <NavLink to={`/cars/${rent.car_id}/`} key={rent.car_id}>
+                <NavLink to={`/cars/${rent.car_id}`} key={rent.car_id}>
                     <Card
                         hoverable
                         style={cardStyle}

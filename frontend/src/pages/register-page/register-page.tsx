@@ -23,7 +23,7 @@ export const RegisterPage: React.FC = () => {
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
         UserAPI.register(values.fullname, values.phone, values.password);
         console.log('Success:', values);
-        // navigate('/');
+        navigate(-1);
     };
 
     return (

@@ -15,68 +15,18 @@ import ErrorPage from '../error-page';
 import ListOfCars from '../pages/cars-page/cars-page';
 import { CarAPI } from '../api/cars-api';
 import { CarPage } from '../pages/car-page/car-page';
+import { Rents } from '../components/rents/rents';
 import NotFoundPage from '../not-found';
 import { LoginPage } from '../pages/login-page/login-page';
 import Logout from '../pages/logout-page/logout-page';
 import { RegisterPage } from '../pages/register-page/register-page';
 import { TestPage } from '../pages/test_page/test-page';
 import { UserPage } from '../pages/user-page/user-page';
+import { AddServiceForm } from '../components/service-add-form/service-add-form';
+import { EditServiceForm } from '../components/service-edit-form/service-edit-form';
 
 const Routes = () => {
     const { token } = useAuth();
-
-    // Define public routes accessible to all users
-    const routesForPublic = [
-        {
-            path: '/service',
-            element: <div>Service Page</div>,
-        },
-        {
-            path: '/about-us',
-            element: <div>About Us</div>,
-        },
-    ];
-
-    // Define routes accessible only to authenticated users
-    const routesForAuthenticatedOnly = [
-        {
-            path: '/',
-            element: <ProtectedRoute />, // Wrap the component in ProtectedRoute
-            children: [
-                {
-                    path: '/',
-                    element: <div>User Home Page</div>,
-                },
-                {
-                    path: '/profile',
-                    element: <div>User Profile</div>,
-                },
-                {
-                    path: '/logout',
-                    element: <div>Logout</div>,
-                },
-            ],
-        },
-    ];
-
-    // Define routes accessible only to non-authenticated users
-    const routesForNotAuthenticatedOnly = [
-        {
-            path: '/',
-            element: <div>Home Page</div>,
-        },
-        {
-            path: '/login',
-            element: <div>Login</div>,
-        },
-    ];
-
-    // Combine and conditionally include routes based on authentication status
-    // const router = createBrowserRouter([
-    //     ...routesForPublic,
-    //     ...(!token ? routesForNotAuthenticatedOnly : []),
-    //     ...routesForAuthenticatedOnly,
-    // ]);
 
     const router = createBrowserRouter(
         createRoutesFromElements(
@@ -105,10 +55,19 @@ const Routes = () => {
                     <Route path="register" element={<RegisterPage />} />
                     <Route path="1" element={<TestPage />} />
                     <Route path="/" element={<ProtectedRoute />}>
+                        <Route
+                            path="services/:serviceId/edit/"
+                            element={<EditServiceForm />}
+                            // action={carLoader}
+                        />
                         <Route path="user" element={<UserPage />} />
                         <Route
                             path="/"
                             element={<Navigate to="cars/" replace />}
+                        />
+                        <Route
+                            path="services/add/"
+                            element={<AddServiceForm />}
                         />
                     </Route>
                     <Route path="/" element={<Navigate to="cars/" replace />} />

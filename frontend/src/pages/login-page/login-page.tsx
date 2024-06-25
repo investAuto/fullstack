@@ -11,23 +11,21 @@ type FieldType = {
     remember?: string;
 };
 
-const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    UserAPI.login(values.phone, values.password);
-    console.log('Success:', values);
-};
-
 const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
     console.log('Failed:', errorInfo);
 };
 
 export const LoginPage: React.FC = () => {
     const { token, setToken } = useAuth();
+    const [form] = Form.useForm();
     let navigate = useNavigate();
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         const data = await UserAPI.login(values.phone, values.password);
         setToken(data.access);
         console.log('Success:', values);
+        // TODO Подумать откуда беруться значения в форме
+        // form.resetFields();
     };
 
     useEffect(() => {
@@ -45,6 +43,7 @@ export const LoginPage: React.FC = () => {
     return (
         <Flex justify="center" align="center">
             <Form
+                form={form}
                 name="basic"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
