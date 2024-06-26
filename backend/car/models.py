@@ -246,18 +246,3 @@ def technical_photo_delete(sender, instance, **kwargs):
     '''Удаляем изображение авто из хранилища
     при удалении обьекта TechnicalServicePhoto'''
     instance.photo.delete(False)
-
-
-class UploadPhoto(models.Model):
-    '''Для временных изображений после создания сервиса должны удаляться'''
-
-    # TODO возможно будет необходимо для работы с временными изображениями
-    photo = models.ImageField(
-        'Фото', upload_to='upload_files', unique=True)
-
-
-@receiver(models.signals.pre_delete, sender=UploadPhoto)
-def upload_photo_delete(sender, instance, **kwargs):
-    '''Удаляем изображение авто из хранилища
-    при удалении обьекта UploadPhoto'''
-    instance.photo.delete(False)

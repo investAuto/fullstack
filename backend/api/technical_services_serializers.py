@@ -10,7 +10,6 @@ from car.models import (
     CarTechnicalService,
     TechnicalService,
     TechnicalServicePhoto,
-    UploadPhoto
 )
 
 
@@ -21,13 +20,6 @@ class TechnicalServiceSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-# class CarTechnicalServicePhotoSerializer(serializers.ModelSerializer):
-# TODO нужен будет если необходимо добавлять фото отдельно
-#     '''Для работы с фотограффиями технического обслуживания.'''
-#     photo = Base64ImageField(required=True)
-#     class Meta:
-#         model = TechnicalServicePhoto
-#         fields = ('id', 'service', 'photo',)
 class CarTechnicalServicePhotoSerializer(serializers.ModelSerializer):
     '''Для работы с фотограффиями технического обслуживания.'''
 
@@ -107,7 +99,10 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
         validated_data.pop('technical_service')
         validated_data.pop('car')
         photos = validated_data.pop('photos')
-        instance.photos.all().delete()
+        remove_photos_ids = self.initial_data.get('remove_photos_ids')
+
+        if remove_photos_ids:
+            instance.photos.all().filter(id__in=remove_photos_ids).delete()
 
         photos = [
             TechnicalServicePhoto(
@@ -144,14 +139,31 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
         return value
 
     def validate_photos(self, value):
+        method = self.context.get('request').method
+        count_of_photos_in_patch_request = (
+            self.instance.photos.count()
+            + len(value)
+            - len(self.initial_data.get('remove_photos_ids'))
+        )
         if (
-            not len(value)
-            or (
-                self.instance
-                and (self.instance.photos.count() + len(value) > 5)
-                or len(value) > 5
-            )
+            method == 'PATCH'
+                and (
+                    count_of_photos_in_patch_request < 1
+                    or count_of_photos_in_patch_request > 5
+                )
         ):
+            raise ValidationError(
+                'Нужно добавить от 1 до 5 фото.'
+            )
+
+        if (method == 'POST'
+            and (
+                not len(value)
+                or (
+                    self.instance
+                    and (self.instance.photos.count() + len(value) > 5)
+                    or len(value) > 5
+                ))):
             raise ValidationError(
                 'Нужно добавить от 1 до 5 фото.'
             )
@@ -204,16 +216,4 @@ class CarTechnicalServiceSerializer(serializers.ModelSerializer):
             'service',
             'photos',
             'comment'
-        )
-
-
-class UploadPhotoSerializer(serializers.ModelSerializer):
-    '''Для работы с временными изображениями.'''
-
-    photo = Base64ImageField(required=True)
-
-    class Meta:
-        model = UploadPhoto
-        fields = (
-            'photo',
         )

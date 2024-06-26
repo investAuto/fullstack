@@ -16,7 +16,6 @@ from api.technical_services_serializers import (
     CarTechnicalServiceSerializer,
     CreateCarTechnicalServiceSerializer,
     TechnicalServiceSerializer,
-    UploadPhotoSerializer
 )
 from car.models import Car, CarTechnicalService, TechnicalService
 from car_rent_invest.models import UserRent
@@ -88,47 +87,6 @@ class CarTechnicalServiceViewSet(viewsets.ModelViewSet):
             many=True
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @action(
-        detail=False,
-        methods=['GET', 'POST', 'DELETE']
-    )
-    def upload_photo(self, request):
-        '''Добавляем временные фото обслуживания'''
-        # TODO как сделать что бы после отправки формы очищалась вся папка
-        # TODO и нужно ли это делать
-        # TODO или нужно написать тесты или удалить этот эндпоинт
-        if request.method == 'GET':
-            serializer = UploadPhotoSerializer()
-            return Response(serializer.data, status=status.HTTP_200)
-        serializer = UploadPhotoSerializer(
-            data=request.data,
-            context={'request': request}
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # @action(
-    #     detail=True,
-    #     methods=['DELETE'],
-    #     # permission_classes=[IsAuthenticated],
-    #     url_path='delete_photo/(?P<photo_id>[^/.]+)'
-    # )
-    # def delete_photo(
-    #     self, request, pk=None, photo_id=None
-    # ):
-    #     '''Удаляем фото обслуживания'''
-    #     # TODO обработать ошибку когда такого фото не существует
-    # TODO или у сервиса нет этого фото
-    #     service = get_object_or_404(CarTechnicalService, pk=pk)
-    #     service_photo = service.photos.all().filter(id=photo_id)
-    #     if not service_photo:
-    #         raise ValidationError('Фото не существует.')
-    #     service_photo.delete()
-    #     return Response(
-    #         'Фото сервиса удалено.', status.HTTP_204_NO_CONTENT
-    #     )
 
     @action(
         detail=False,
