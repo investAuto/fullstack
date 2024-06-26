@@ -79,17 +79,17 @@ export const EditServiceForm: React.FC = () => {
                 if (item?.thumbUrl) {
                     return { photo: item.thumbUrl };
                 }
-                const getBase64 = (file) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = function () {
-                        setCurrentFile(reader.result);
-                        onChange(reader.result);
-                    };
-                    reader.onerror = function (error) {
-                        console.log('Error: ', error);
-                    };
-                };
+                // const getBase64 = (file) => {
+                //     const reader = new FileReader();
+                //     reader.readAsDataURL(file);
+                //     reader.onload = function () {
+                //         setCurrentFile(reader.result);
+                //         onChange(reader.result);
+                //     };
+                //     reader.onerror = function (error) {
+                //         console.log('Error: ', error);
+                //     };
+                // };
                 // return new Promise(async (resolve, reject) => {
                 //     try {
                 //         // Fetch на изображении с использованием axios

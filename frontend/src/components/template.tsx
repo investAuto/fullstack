@@ -78,7 +78,7 @@ const Template: React.FC<Props> = ({ children }) => {
                     <div>Тестовая</div>
                 </NavLink> */}
                 <NavLink to={'/cars/'} style={loginButtonStyle}>
-                    <div>Header</div>
+                    <div>главная</div>
                 </NavLink>
 
                 <NavLink to={'register'} style={loginButtonStyle}>

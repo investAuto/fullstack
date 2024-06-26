@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { TinyColor } from '@ctrl/tinycolor';
 import { Preloader } from '../../components/preloader/preloader';
@@ -34,6 +34,10 @@ const contentStyle: React.CSSProperties = {
 
 export const CarPage = () => {
     const car = useLoaderData();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     if (!car) {
         return <Preloader />;
