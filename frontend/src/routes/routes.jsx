@@ -31,26 +31,13 @@ const Routes = () => {
 
     const router = createBrowserRouter(
         createRoutesFromElements(
-            <Route
-                path="/"
-                element={<App />}
-                // loader={rootLoader}
-                // action={rootAction}
-                errorElement={<ErrorPage />}
-            >
+            <Route path="/" element={<App />} errorElement={<ErrorPage />}>
                 <Route errorElement={<ErrorPage />}>
-                    <Route
-                        index
-                        path="cars/"
-                        element={<ListOfCars />}
-                        loader={CarAPI.carsLoader}
-                        // action={Preloader}
-                    />
+                    <Route index path="cars/" element={<ListOfCars />} />
                     <Route
                         path="cars/:carId"
                         element={<CarPage />}
                         loader={CarAPI.carLoader}
-                        // action={carLoader}
                     />
                     <Route path="login" element={<LoginPage />} />
                     <Route path="logout" element={<Logout />} />
@@ -60,7 +47,6 @@ const Routes = () => {
                         <Route
                             path="services/:serviceId/edit/"
                             element={<EditServiceForm />}
-                            // action={carLoader}
                         />
                         <Route path="user" element={<UserPage />} />
                         <Route

@@ -3,22 +3,9 @@ import axios from 'axios';
 const API_URL = 'http://127.0.0.1:8000/api/v1/';
 
 export const CarAPI = {
-    carsLoader: async () => {
-        try {
-            const response = await axios.get(`${API_URL}cars/`);
-            const carsData = response.data;
-            return carsData;
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
-    },
-    // carsLoader: async ({ params = { page: 1 } }) => {
+    // carsLoader: async () => {
     //     try {
-    //         const response = await axios.get(
-    //             // `${API_URL}cars/`
-    //             `${API_URL}cars${page}`
-    //         );
+    //         const response = await axios.get(`${API_URL}cars/`);
     //         const carsData = response.data;
     //         return carsData;
     //     } catch (error) {
@@ -26,6 +13,17 @@ export const CarAPI = {
     //         throw error;
     //     }
     // },
+    carsLoader: async ({ params = { page: 1 } } = {}) => {
+        try {
+            const response = await axios.get(
+                `${API_URL}cars?page=${params.page}`
+            );
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    },
     carLoader: async ({ params }) => {
         try {
             const response = await axios.get(`${API_URL}cars/${params.carId}`);

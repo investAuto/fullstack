@@ -16,33 +16,42 @@ import { CarAPI } from '../../api/cars-api';
 const { Meta } = Card;
 
 export const ListOfCars = () => {
-    // const [page, setPage] = useSearchParams({ page: 1 });
-    const location = useLocation();
-    // const { page } = useParams();
-    const carsData = useLoaderData();
-    // const [carsData, setCarsData] = useState([]);
+    const [carsData, setCarsData] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const page = searchParams.get('page')
+            ? parseInt(searchParams.get('page'))
+            : 1;
+        setCurrentPage(page);
+    }, [searchParams]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
         navigate(`/cars?page=${page}`);
     };
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const data = await CarAPI.carsLoader({
-    //                 params: { page: currentPage },
-    //             });
-    //             setCarsData(data);
-    //         } catch (error) {
-    //             console.log(error);
-    //         }
-    //     };
-    //     fetchData();
-    //     console.log('Загружены данные для страницы:', currentPage);
-    // }, [currentPage]);
+    useEffect(() => {
+        const fetchData = async () => {
+            // TODO Нужно подумать как менять последнюю страницу,
+            // TODO если мы удаляем карточки и пагинация должна быть уменьшена
+            // if (carsData?.count < 11) {
+            //     setCurrentPage(1);
+            // }
+            try {
+                const data = await CarAPI.carsLoader({
+                    params: { page: currentPage },
+                });
+                setCarsData(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
+        console.log('Загружены данные для страницы:', currentPage);
+    }, [currentPage]);
 
     if (!carsData) {
         return <Preloader />;
@@ -56,11 +65,6 @@ export const ListOfCars = () => {
             gap="small"
             className={navigation.state === 'loading' ? 'loading' : ''}
         >
-            <Pagination
-                current={currentPage}
-                onChange={handlePageChange}
-                total={carsData.count}
-            />
             {carsData.results.map((car) => (
                 <NavLink to={`${car.id}/`} key={car.id}>
                     <Card
@@ -86,6 +90,18 @@ export const ListOfCars = () => {
                     </Card>
                 </NavLink>
             ))}
+            {carsData.count > 10 && (
+                <Flex
+                    justify="center"
+                    style={{ marginTop: '16px', width: '100%' }}
+                >
+                    <Pagination
+                        current={currentPage}
+                        onChange={handlePageChange}
+                        total={carsData.count}
+                    />
+                </Flex>
+            )}
         </Flex>
     );
 };
