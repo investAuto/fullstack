@@ -83,6 +83,7 @@ class GetServiceTest(APITestCase):
             service=cls.car_service1
         )
         cls.url = '/api/v1/services/'
+        cls.remove_photos_ids = [cls.car_service_photo1.id]
 
     def setUp(self):
         self.client = APIClient()
@@ -106,13 +107,16 @@ class GetServiceTest(APITestCase):
             return {'photo': f'data:image/png;base64,{photo_data}'}
 
     @staticmethod
-    def get_service_data(self, photos, comment='test_comment'):
+    def get_service_data(
+            self, photos, remove_photos_ids=None, comment='test_comment'
+    ):
         '''Получаем данные для конкретного сервиса автомобиля'''
         return {
             'car': self.car1.license_plate,
             'service': self.service1.name,
             'photos': photos,
-            'comment': comment
+            'comment': comment,
+            'remove_photos_ids': remove_photos_ids
         }
 
     def test_get_services_by_auth_user(self):
@@ -128,7 +132,7 @@ class GetServiceTest(APITestCase):
         )
         self.assertEqual(
             response.data[0]['car_license_plate'], self.car1.license_plate
-            )
+        )
         self.assertEqual(
             response.data[0]['service'],
             self.car_service1.technical_service.name
@@ -198,7 +202,10 @@ class GetServiceTest(APITestCase):
         response = self.client.patch(
             f'{self.url}{self.car_service1.id}/',
             self.get_service_data(
-                self, [photo, photo], 'Обновлённый комментарий'
+                self,
+                [photo, photo],
+                self.remove_photos_ids,
+                'Обновлённый комментарий'
             ),
             format='json'
         )
@@ -209,7 +216,7 @@ class GetServiceTest(APITestCase):
         self.assertEqual(
             current_car_service.comment, 'Обновлённый комментарий'
         )
-        self.assertEqual(current_car_service.photos.count(), 2)
+        self.assertEqual(current_car_service.photos.count(), 3)
 
     def test_update_service_by_not_author(self):
         '''Тест на обновление сервиса не автором этого сервиса.'''
@@ -227,7 +234,7 @@ class GetServiceTest(APITestCase):
         response = self.client.get(f'{self.url}get_services/')
         self.assertEqual(len(response.data), 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
     def test_get_technical_services_by_not_auth_user(self):
         '''Тест на получение всех обслуживаний для получения имён
         неавторизованным пользователем.'''

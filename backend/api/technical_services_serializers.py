@@ -140,21 +140,20 @@ class CreateCarTechnicalServiceSerializer(serializers.ModelSerializer):
 
     def validate_photos(self, value):
         method = self.context.get('request').method
-        count_of_photos_in_patch_request = (
-            self.instance.photos.count()
-            + len(value)
-            - len(self.initial_data.get('remove_photos_ids'))
-        )
-        if (
-            method == 'PATCH'
-                and (
-                    count_of_photos_in_patch_request < 1
-                    or count_of_photos_in_patch_request > 5
-                )
-        ):
-            raise ValidationError(
-                'Нужно добавить от 1 до 5 фото.'
+
+        if method == 'PATCH':
+            count_of_photos_in_patch_request = (
+                self.instance.photos.count()
+                + len(value)
+                - len(self.initial_data.get('remove_photos_ids'))
             )
+            if (
+                count_of_photos_in_patch_request < 1
+                or count_of_photos_in_patch_request > 5
+            ):
+                raise ValidationError(
+                    'Нужно добавить от 1 до 5 фото.'
+                )
 
         if (method == 'POST'
             and (
