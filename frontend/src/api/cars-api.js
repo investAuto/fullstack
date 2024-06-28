@@ -1,6 +1,12 @@
 import axios from 'axios';
+import { message } from 'antd';
 
 const API_URL = 'http://127.0.0.1:8000/api/v1/';
+
+const RESPONSE_MESSAGE = message;
+RESPONSE_MESSAGE.config({
+    top: 70,
+});
 
 export const CarAPI = {
     carsLoader: async ({ params = { page: 1 } } = {}) => {
@@ -10,8 +16,7 @@ export const CarAPI = {
             );
             return response.data;
         } catch (error) {
-            console.log(error);
-            throw error;
+            RESPONSE_MESSAGE.error(error.message);
         }
     },
     carLoader: async ({ params }) => {
@@ -20,49 +25,37 @@ export const CarAPI = {
             const car = response.data;
             return car;
         } catch (error) {
-            console.log(error);
-            throw error;
+            RESPONSE_MESSAGE.error(error.message);
         }
     },
     rentsLoader: async () => {
         return axios
             .get(API_URL + 'cars/my_rents/')
             .then((response) => {
-                // rents = response.data;
                 return response.data;
             })
             .catch((error) => {
-                console.error(error.message);
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                RESPONSE_MESSAGE.error(error.message);
             });
     },
     servicesLoader: async () => {
         return axios
             .get(API_URL + 'services/')
             .then((response) => {
-                // rents = response.data;
                 return response.data;
             })
             .catch((error) => {
-                console.error(error.message);
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                RESPONSE_MESSAGE.error(error.message);
             });
     },
     addService: async (data) => {
         return axios
             .post(API_URL + 'services/', data)
             .then((response) => {
-                return console.log(response.data);
+                return response.data;
             })
             .catch((error) => {
-                console.error(error.message);
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                RESPONSE_MESSAGE.error(error.message);
             });
     },
     getAllServices: async () => {
@@ -72,10 +65,7 @@ export const CarAPI = {
                 return response.data;
             })
             .catch((error) => {
-                console.error(error.message);
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                RESPONSE_MESSAGE.error(error.message);
             });
     },
     getService: async (serviceId) => {
@@ -85,10 +75,7 @@ export const CarAPI = {
                 return response.data;
             })
             .catch((error) => {
-                console.error(error.message);
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                RESPONSE_MESSAGE.error(error.message);
             });
     },
     editService: async (serviceId, data) => {
@@ -98,10 +85,18 @@ export const CarAPI = {
                 return response.data;
             })
             .catch((error) => {
-                console.error(error.message);
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+                RESPONSE_MESSAGE.error(error.message);
+            });
+    },
+    sendApplication: async (carId, data) => {
+        return axios
+            .post(`${API_URL}cars/${carId}/send_application/`, data)
+            .then((response) => {
+                RESPONSE_MESSAGE.success('Сообщение отправлено!');
+                return response.data;
+            })
+            .catch((error) => {
+                RESPONSE_MESSAGE.error(error.message);
             });
     },
 };

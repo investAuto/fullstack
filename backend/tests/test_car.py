@@ -81,6 +81,12 @@ class GetCarsTest(APITestCase):
             start_rent='2025-05-14',
             end_rent='2025-05-25'
         )
+        cls.valid_message_data = {
+            'name': 'Сегрей', 'carName': 'kia', 'phone': '8900000000',
+        }
+        cls.invalid_message_data = {
+            'name': 'Сегрей', 'carName': '', 'phone': '8900000000',
+        }
 
     def setUp(self):
         self.client = APIClient()
@@ -136,3 +142,25 @@ class GetCarsTest(APITestCase):
         response = self.another_client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('services'), None)
+
+    def test_send_application_with_valid_data(self):
+        '''Проверяем что любой пользователь может отправить заявку
+        с валидными данными
+        '''
+        url = (
+            reverse('cars-detail', kwargs={'pk': self.car1.id})
+            + 'send_application/'
+        )
+        response = self.unauth_client.post(url, data=self.valid_message_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_send_application_with_invalid_data(self):
+        '''Проверяем что любой пользователь не может отправить заявку
+        с невалидными данными
+        '''
+        url = (
+            reverse('cars-detail', kwargs={'pk': self.car1.id})
+            + 'send_application/'
+        )
+        response = self.unauth_client.post(url, data=self.invalid_message_data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

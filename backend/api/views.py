@@ -2,8 +2,10 @@ from django.conf import settings
 from django.db.models import Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from django.core.mail import send_mail
+from email.header import Header
 
 from api.car_serializers import (
     CarMainPageSerializer,
@@ -51,6 +53,36 @@ class CarViewSet(viewsets.ReadOnlyModelViewSet):
             rents, many=True, context={'request': request}
         )
         return Response(serializer.data)
+
+    @action(
+        detail=True,
+        methods=['POST'],
+        permission_classes=[AllowAny]
+    )
+    def send_application(self, request, pk=None):
+        '''Отправка заявки на аренду или покупку.'''
+        if not request.data.get('carName') or not request.data.get('phone'):
+            return Response(
+                'Отсутствует название авто или телефон.',
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        name = (
+            'Имя отправителя: ' +
+            (request.data.get('name') or 'не указано') +
+            '\n'
+        )
+        car_name = 'Название авто: ' + request.data.get('carName') + '\n'
+        phone = 'Телефон: ' + request.data.get('phone')
+
+        send_mail(
+            subject=Header('Заявка на аренду или покупку.', 'utf-8'),
+            message=name + car_name + phone,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[settings.EMAIL_HOST_USER],
+            fail_silently=True,
+        )
+        return Response('Заявка отправлена!', status=status.HTTP_200_OK)
 
 
 class CarTechnicalServiceViewSet(viewsets.ModelViewSet):
