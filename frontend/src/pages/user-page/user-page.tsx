@@ -1,28 +1,26 @@
 // @ts-nocheck
 import { useContext, useEffect } from 'react';
-import { Typography, Button, Tooltip, Flex } from 'antd';
+import { Typography, Button } from 'antd';
 import { Rents } from '../../components/rents/rents';
-import { useAuth } from '../../context/auth-provider';
 import { Services } from '../../components/services/services';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircleFilled, SearchOutlined } from '@ant-design/icons';
-import { AddServiceForm } from '../../components/service-add-form/service-add-form';
-import { NavLink } from 'react-router-dom';
-import { UserDataComponent } from '../../components/user-data/user-data';
+import { PlusCircleFilled } from '@ant-design/icons';
 import { UsersContext } from '../../context/user-context/user-context';
 import { Preloader } from '../../components/preloader/preloader';
 
-const { Text, Title } = Typography;
-
-const API_URL = 'http://127.0.0.1:8000/api/v1/';
+const { Title } = Typography;
 
 export const UserPage = () => {
-    const { token } = useAuth();
     const { user, setUser } = useContext(UsersContext);
     const navigate = useNavigate();
     useEffect(() => {
-        setUser();
-    }, []);
+        if (!user?.id) {
+            setUser();
+        }
+        // setUser();
+        // TODO если установить setUser в зависимости он будет бесконечно выполняться
+    }, [user, setUser]);
+
     if (!user?.id) {
         return <Preloader />;
     }

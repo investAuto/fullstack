@@ -1,22 +1,10 @@
-// @ts-nocheck
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useAuth } from '../../context/auth-provider';
 import { Button, Card, Flex, Image, Typography } from 'antd';
-import { NavLink, useLoaderData } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { CarAPI } from '../../api/cars-api';
 import { Preloader } from '../preloader/preloader';
+import { Rents as RentsType } from './rents-types';
 const { Text, Title } = Typography;
-
-const API_URL = 'http://127.0.0.1:8000/api/v1/';
-
-export interface Rents {
-    car_id: number;
-    car_name: string;
-    car_photo: string;
-    end_rent: Date;
-    start_rent: Date;
-}
 
 const cardStyle: React.CSSProperties = {
     overflow: 'hidden',
@@ -32,7 +20,8 @@ const imgStyle: React.CSSProperties = {
 };
 
 export const Rents = () => {
-    const [rents, setRents] = useState<Rents[]>([]);
+    const [rents, setRents] = useState<RentsType[]>([]);
+
     useEffect(() => {
         const fetchRentData = async () => {
             const rents = await CarAPI.rentsLoader();
@@ -84,7 +73,7 @@ export const Rents = () => {
                                 )}
 
                                 <Button type="primary" target="_blank">
-                                    Get Started
+                                    Оплатить
                                 </Button>
                             </Flex>
                         </Flex>

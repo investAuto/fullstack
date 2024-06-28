@@ -1,31 +1,29 @@
 // @ts-nocheck
-import React, { useState, useEffect, SetStateAction } from 'react';
-import axios from 'axios';
-import { useParams, useLoaderData } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Select, Typography, Upload, Image } from 'antd';
-import type { FormProps, UploadFile } from 'antd';
-import { useAuth } from '../../context/auth-provider';
+import {
+    Button,
+    Form,
+    Input,
+    Select,
+    Typography,
+    Upload,
+    Image,
+    message,
+} from 'antd';
+import type { FormProps, UploadFile, UploadProps } from 'antd';
 import { CarAPI } from '../../api/cars-api';
 import { Preloader } from '../../components/preloader/preloader';
 import {
     CurrentService,
     FieldType,
-    Photos,
+    Photo,
     Rents,
     Service,
 } from './service-edit-form-types';
-
 const { Title } = Typography;
-
 const { TextArea } = Input;
-
-// const normFile = (e: any) => {
-//     if (Array.isArray(e)) {
-//         return e;
-//     }
-//     return e?.fileList;
-// };
 
 const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
@@ -34,25 +32,29 @@ const uploadButton = (
     </button>
 );
 
+const RESPONSE_MESSAGE = message;
+RESPONSE_MESSAGE.config({
+    top: 70,
+});
+
 export const EditServiceForm: React.FC = () => {
-    // const { currentService } = useLoaderData<CurrentService>();
-    const { token } = useAuth();
     const [form] = Form.useForm();
     const { serviceId } = useParams();
+    const navigate = useNavigate();
 
     const [currentService, setCurrentService] = useState<CurrentService>();
-    const [services, setServices] = useState<Service[]>(() => []);
+    const [services, setServices] = useState<Service[]>([]);
     const [rents, setRents] = useState<Rents[]>([]);
 
     const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [removeList, setRemoveList] = useState<number[]>([]);
     const [previewImage, setPreviewImage] = useState('');
     const [previewOpen, setPreviewOpen] = useState(false);
 
-    const changePhotos = (photos: Photos[]) => {
-        // const newPhotos = photos.map((photo) => {return photo.photo});
+    const changePhotos = (photos: Photo[]) => {
         if (photos) {
             return photos.map((photo) => {
-                return { url: photo.photo };
+                return { id: photo.id, url: photo.photo };
             });
         }
     };
@@ -69,69 +71,38 @@ export const EditServiceForm: React.FC = () => {
             setFileList(photos);
         };
         fetchServicesData();
-    }, [token]);
+    }, [serviceId]);
+
+    const photos = [];
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        // TODO падает cors при отправке запроса за изображением
-        values.images = fileList;
-        const photos = await Promise.all(
-            values.images.map((item) => {
-                if (item?.thumbUrl) {
-                    return { photo: item.thumbUrl };
-                }
-                // const getBase64 = (file) => {
-                //     const reader = new FileReader();
-                //     reader.readAsDataURL(file);
-                //     reader.onload = function () {
-                //         setCurrentFile(reader.result);
-                //         onChange(reader.result);
-                //     };
-                //     reader.onerror = function (error) {
-                //         console.log('Error: ', error);
-                //     };
-                // };
-                // return new Promise(async (resolve, reject) => {
-                //     try {
-                //         // Fetch на изображении с использованием axios
-                //         const response = await axios.get(item.url, {
-                //             headers: {
-                //                 Authorization: `Bearer ${token}`,
-                //             },
-                //             responseType: 'blob', // Указываем, что ожидаем получить Blob
-                //         });
+        // const formData = new FormData();
+        // formData.append('car', values.carLicensePlate);
+        // formData.append('service', values.serviceName);
+        // formData.append('comment', values.serviceCommen);
 
-                //         // Превращаем это в Blob
-                //         const blob = new Blob([response.data]);
-
-                //         // Читаем Blob, как если бы это был File
-                //         const reader = new FileReader();
-                //         reader.onloadend = () => {
-                //             const base64ImageString = reader.result as string;
-                //             resolve({ photo: base64ImageString });
-                //         };
-                //         reader.onerror = reject;
-                //         reader.readAsDataURL(blob);
-                //     } catch (e) {
-                //         reject('Не удалось обработать URL файла. ' + e.message);
-                //     }
-                // });
-            })
-        );
+        for (const file of fileList) {
+            if (file.originFileObj) {
+                const base64 = await getBase64(file.originFileObj);
+                photos.push({ photo: base64 });
+            }
+        }
         const data = {
             car: values.carLicensePlate,
             service: values.serviceName,
-            comment: values.comment,
-            photos,
+            comment: values.serviceCommen,
+            photos: photos,
+            remove_photos_ids: removeList,
         };
         CarAPI.editService(currentService.id, data);
-        console.log('Success:', values);
         setFileList([]);
+        navigate('/user/');
     };
 
     const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
         errorInfo
     ) => {
-        console.log('Failed:', errorInfo);
+        return errorInfo;
     };
 
     if (
@@ -144,7 +115,7 @@ export const EditServiceForm: React.FC = () => {
         return <Preloader />;
     }
 
-    const getBase64 = (file: FileType): Promise<string> =>
+    const getBase64 = (file: File): Promise<string> =>
         new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -154,16 +125,20 @@ export const EditServiceForm: React.FC = () => {
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj as FileType);
+            file.preview = await getBase64(file.originFileObj as File);
         }
         setPreviewImage(file.url || (file.preview as string));
         setPreviewOpen(true);
     };
+    const handleRemove = (file) => {
+        setRemoveList([file.id, ...removeList]);
+        setFileList((prevList) =>
+            prevList.filter((item) => item.uid !== file.uid)
+        );
+    };
 
     const handleChange: UploadProps['onChange'] = ({
         fileList: newFileList,
-    }: {
-        fileList: UploadFile[];
     }) => {
         setFileList(newFileList);
         form.setFieldsValue({
@@ -175,6 +150,7 @@ export const EditServiceForm: React.FC = () => {
         <>
             <Title>Изменение сервиса {currentService.id}</Title>
             <Form
+                form={form}
                 labelCol={{ span: 4 }}
                 wrapperCol={{ span: 14 }}
                 layout="horizontal"
@@ -199,15 +175,14 @@ export const EditServiceForm: React.FC = () => {
                     ]}
                 >
                     <Select>
-                        {rents &&
-                            rents.map((rent) => (
-                                <Select.Option
-                                    value={rent.car_license_plate}
-                                    key={rent.car_id}
-                                >
-                                    {rent.car_license_plate}
-                                </Select.Option>
-                            ))}
+                        {rents.map((rent) => (
+                            <Select.Option
+                                value={rent.car_license_plate}
+                                key={rent.car_id}
+                            >
+                                {rent.car_license_plate}
+                            </Select.Option>
+                        ))}
                     </Select>
                 </Form.Item>
                 <Form.Item
@@ -221,22 +196,20 @@ export const EditServiceForm: React.FC = () => {
                     ]}
                 >
                     <Select>
-                        {services &&
-                            services.map((service) => (
-                                <Select.Option
-                                    value={service.name}
-                                    key={service.id}
-                                >
-                                    {service.name}
-                                </Select.Option>
-                            ))}
+                        {services.map((service) => (
+                            <Select.Option
+                                value={service.name}
+                                key={service.id}
+                            >
+                                {service.name}
+                            </Select.Option>
+                        ))}
                     </Select>
                 </Form.Item>
                 <Form.Item label="Комментарий" name="serviceCommen">
                     <TextArea rows={4} autoSize={{ minRows: 4, maxRows: 8 }} />
                 </Form.Item>
                 <Form.Item label="Upload" name="images" noStyle>
-                    {/* TODO необходимо обработать ошибку по добавлению более пяти фото */}
                     <div>
                         <Upload
                             listType="picture-card"
@@ -244,6 +217,7 @@ export const EditServiceForm: React.FC = () => {
                             fileList={fileList}
                             onPreview={handlePreview}
                             onChange={handleChange}
+                            onRemove={handleRemove}
                         >
                             {fileList.length >= 5 ? null : uploadButton}
                         </Upload>

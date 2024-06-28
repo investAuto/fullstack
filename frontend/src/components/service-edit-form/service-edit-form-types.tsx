@@ -6,7 +6,7 @@ export interface Rents {
 export interface PhotoObj {
     thumbUrl: string;
 }
-export interface Photos {
+export interface Photo {
     id: number;
     photo: string;
 }
@@ -19,7 +19,7 @@ export interface CurrentService {
     id: number;
     car_license_plate: string;
     service: string;
-    photos: Photos[];
+    photos: Photo[];
     comment?: string;
 }
 

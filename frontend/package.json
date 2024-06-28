@@ -30,7 +30,7 @@
         "build": "craco build",
         "test": "craco test",
         "eject": "craco eject",
-        "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+        "lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
         "lint:fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix"
     },
     "eslintConfig": {
@@ -52,13 +52,15 @@
         ]
     },
     "devDependencies": {
-        "eslint": "^8.57.0",
-        "prettier": "3.3.1",
+        "@tanstack/eslint-plugin-query": "^5.47.0",
         "@typescript-eslint/eslint-plugin": "^5.62.0",
         "@typescript-eslint/parser": "^5.62.0",
+        "babel-eslint": "^10.1.0",
+        "eslint": "^8.57.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-react-hooks": "^4.6.0",
-        "eslint-plugin-react-refresh": "^0.4.4"
+        "eslint-plugin-react-refresh": "^0.4.4",
+        "prettier": "3.3.1"
     },
     "proxy": "http://127.0.0.1:8000"
 }

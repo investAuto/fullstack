@@ -5,8 +5,7 @@
 //         'eslint:recommended',
 //         'plugin:@typescript-eslint/recommended',
 //         'plugin:react-hooks/recommended',
-//         // TODO разобраться где этот плагин и как он работает
-//         // 'plugin:@tanstack/eslint-plugin-query/recommended',
+//         'plugin:@tanstack/eslint-plugin-query/recommended',
 //         'prettier',
 //     ],
 //     ignorePatterns: ['dist', '.eslintrc.cjs'],

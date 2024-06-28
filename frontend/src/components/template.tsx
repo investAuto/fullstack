@@ -1,9 +1,9 @@
 // @ts-nocheck
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
+import { Props } from './template-types';
 import { Layout } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../context/auth-provider';
 import { UsersContext } from '../context/user-context/user-context';
 
 const { Header, Content, Footer } = Layout;
@@ -44,39 +44,22 @@ const loginButtonStyle = {
     textShadow: 'white 2px 0 10px',
 };
 
-type Props = {
-    children?: React.ReactNode;
-};
-
-const Template: React.FC<Props> = ({ children }) => {
-    const { token, setToken } = useAuth();
+export const Template: React.FC<Props> = ({ children }) => {
     const { user, setUser, deleteCurrentUser } = useContext(UsersContext);
 
     useEffect(() => {
-        // Слушаем событие на изменение localStorage
         const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'token') {
+            if (e.key === 'token' || !user.id) {
                 setUser();
             }
         };
-        // {
-        //     token && setUser();
-        // }
-        // Добавляем и удаляем слушатель событий при монтировании и демонтировании
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
-    }, []);
-
-    // if (!user?.fullname || !token) {
-    //     return <h1>Подождите...</h1>;
-    // }
+    }, [user, setUser]);
 
     return (
         <Layout style={layoutStyle}>
             <Header style={headerStyle}>
-                {/* <NavLink to={'/1'} style={loginButtonStyle}>
-                    <div>Тестовая</div>
-                </NavLink> */}
                 <NavLink to={'/cars/'} style={loginButtonStyle}>
                     <div>главная</div>
                 </NavLink>
@@ -84,6 +67,7 @@ const Template: React.FC<Props> = ({ children }) => {
                 <NavLink to={'register'} style={loginButtonStyle}>
                     регистрация
                 </NavLink>
+                {/* TODO здесь остаётся имя пользователя если выйти как это исправить */}
                 {user?.fullname ? (
                     <>
                         <NavLink to={'/user/'} style={loginButtonStyle}>
@@ -109,5 +93,3 @@ const Template: React.FC<Props> = ({ children }) => {
         </Layout>
     );
 };
-
-export default Template;

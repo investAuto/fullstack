@@ -1,19 +1,14 @@
 import axios from 'axios';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 
-const AuthContext = createContext();
-// TODO посмотреть как здесь всё работает ещё раз
-const AuthProvider = ({ children }) => {
-    // Component content goes here
+export const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
     const [token, setToken_] = useState(localStorage.getItem('token'));
-    // const [user, setUser_] = useState(localStorage.getItem('user'));
 
     const setToken = (newToken) => {
         setToken_(newToken);
     };
-    // const setUser = (newUser) => {
-    //     setUser_(newUser);
-    // };
 
     useEffect(() => {
         if (token) {
@@ -27,8 +22,6 @@ const AuthProvider = ({ children }) => {
 
     const contextValue = useMemo(
         () => ({
-            // user,
-            // setUser,
             token,
             setToken,
         }),
@@ -40,9 +33,3 @@ const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-
-export const useAuth = () => {
-    return useContext(AuthContext);
-};
-
-export default AuthProvider;

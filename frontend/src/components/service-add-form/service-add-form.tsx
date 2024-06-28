@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +14,7 @@ import {
     FormProps,
 } from 'antd';
 
-import { useAuth } from '../../context/auth-provider';
+import { useAuth } from '../../context/hook_use_auth';
 import { CarAPI } from '../../api/cars-api';
 import { FieldType, FileType, Rents, Service } from './service-add-form-types';
 import { Preloader } from '../../components/preloader/preloader';
@@ -30,16 +29,16 @@ const uploadButton = (
         <div style={{ marginTop: 8 }}>Upload</div>
     </button>
 );
-const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-        return e;
-    }
-    return e?.fileList;
-};
+// const normFile = (e: any) => {
+//     if (Array.isArray(e)) {
+//         return e;
+//     }
+//     return e?.fileList;
+// };
 export const AddServiceForm: React.FC = () => {
     const { token } = useAuth();
     const [form] = Form.useForm();
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const [services, setServices] = useState<Service[]>(() => []);
     const [rents, setRents] = useState<Rents[]>([]);
 
@@ -58,32 +57,21 @@ export const AddServiceForm: React.FC = () => {
     }, [token]);
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-        const photos = await Promise.all(
-            values.images.map((item) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        const base64ImageString = reader.result as string;
-                        item.thumbUrl = base64ImageString;
-                        resolve({ photo: item.thumbUrl });
-                    };
-                    reader.onerror = reject;
-                    if (item) {
-                        reader.readAsDataURL(item);
-                    } else {
-                        reject('No origin file attached with the item.');
-                    }
-                });
-            })
-        );
+        const photos = [];
+
+        for (const file of fileList) {
+            if (file.originFileObj) {
+                const base64 = await getBase64(file.originFileObj);
+                photos.push({ photo: base64 });
+            }
+        }
         const data = {
             car: values.carLicensePlate,
             service: values.serviceName,
-            comment: values.comment,
+            comment: values.serviceCommen,
             photos,
         };
         CarAPI.addService(data);
-        console.log('Success:', values);
         setFileList([]);
         form.resetFields();
         navigate('/user/');
@@ -93,7 +81,7 @@ export const AddServiceForm: React.FC = () => {
         // TODO необходимо обработать ошибки здесь
         errorInfo
     ) => {
-        console.log('Failed:', errorInfo);
+        return errorInfo;
     };
 
     if (!services || !services.length || !rents || !rents.length) {
@@ -116,39 +104,6 @@ export const AddServiceForm: React.FC = () => {
         setPreviewOpen(true);
     };
 
-    // const handleChange: UploadProps['onChange'] = async ({
-    //     file,
-    //     currentfileList,
-    // }) => {
-    //     let newFileList = [...currentfileList];
-
-    //     // Обрабатываем только те файлы, которые были успешно загружены
-    //     if (file) {
-    //         // Создаем объект FileReader, чтобы прочитать данные файла
-    //         const reader = new FileReader();
-
-    //         // Определение, что делать, когда чтение файла завершено
-    //         reader.onloadend = () => {
-    //             // Преобразует результат чтения в строку
-    //             const base64ImageString = reader.result as string;
-
-    //             // Найти файл в fileList и добавить thumbUrl
-    //             const index = newFileList.findIndex(
-    //                 (item) => item.uid === file.uid
-    //             );
-    //             if (index !== -1) {
-    //                 newFileList[index].thumbUrl = base64ImageString;
-    //             }
-    //         };
-
-    //         // Начинаем чтение файла
-    //         if (file.originFileObj) {
-    //             reader.readAsDataURL(file.originFileObj);
-    //         }
-    //     }
-
-    //     setFileList(newFileList);
-    // };
     const handleChange: UploadProps['onChange'] = ({
         fileList: newFileList,
     }: {
@@ -220,14 +175,20 @@ export const AddServiceForm: React.FC = () => {
                             ))}
                     </Select>
                 </Form.Item>
-                <Form.Item label="Комментарий" name="comment">
+                <Form.Item label="Комментарий" name="serviceCommen">
                     <TextArea rows={4} autoSize={{ minRows: 4, maxRows: 8 }} />
                 </Form.Item>
                 <Form.Item
                     name="images"
                     label="Upload"
                     // valuePropName="fileList"
-                    getValueFromEvent={normFile}
+                    // getValueFromEvent={normFile}
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Пожалуйста добавьте фото.',
+                        },
+                    ]}
                 >
                     {/* TODO необходимо обработать ошибку по добавлению более пяти фото */}
                     <div>

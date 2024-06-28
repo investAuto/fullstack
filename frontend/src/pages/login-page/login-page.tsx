@@ -1,11 +1,10 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
 import type { FormProps } from 'antd';
-import { redirect, useNavigate } from 'react-router-dom';
-import { Button, Checkbox, Flex, Form, Input, message } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { Button, Flex, Form, Input, message } from 'antd';
 import { UserAPI } from '../../api/user-api';
-import { useAuth } from '../../context/auth-provider';
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import { useAuth } from '../../context/hook_use_auth';
 
 type FieldType = {
     phone?: string;
@@ -14,13 +13,14 @@ type FieldType = {
 };
 
 const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    // TODO Нужно ли мне onFinishFailed или нет
+    return errorInfo;
 };
 
 export const LoginPage: React.FC = () => {
     const { token, setToken } = useAuth();
     const [form] = Form.useForm();
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const RESPONSE_MESSAGE = message;
     RESPONSE_MESSAGE.config({
@@ -32,14 +32,13 @@ export const LoginPage: React.FC = () => {
         {
             data?.access && setToken(data.access);
         }
-        console.log('Success:', values);
     };
 
     useEffect(() => {
         if (token) {
             navigate('/user/', { replace: true });
         }
-    }, [token, setToken]);
+    }, [navigate, token, setToken]);
 
     return (
         <Flex justify="center" align="center">
@@ -75,18 +74,9 @@ export const LoginPage: React.FC = () => {
                 >
                     <Input.Password />
                 </Form.Item>
-
-                {/* <Form.Item<FieldType>
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{ offset: 8, span: 16 }}
-        >
-            <Checkbox>Remember me</Checkbox>
-        </Form.Item> */}
-
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                     <Button type="primary" htmlType="submit">
-                        Submit
+                        Войти
                     </Button>
                 </Form.Item>
             </Form>

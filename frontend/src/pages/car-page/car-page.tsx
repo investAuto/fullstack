@@ -1,26 +1,12 @@
 // @ts-nocheck
 import React, { useEffect } from 'react';
+import { ApplicationModal } from '../../components/modal/modal';
 import { useLoaderData } from 'react-router-dom';
-import { TinyColor } from '@ctrl/tinycolor';
 import { Preloader } from '../../components/preloader/preloader';
-import {
-    Button,
-    ConfigProvider,
-    Carousel,
-    Image,
-    Typography,
-    Divider,
-} from 'antd';
+import { Carousel, Image, Typography, Divider } from 'antd';
 import styles from './car-page.module.less';
 
 const { Text } = Typography;
-
-const colors2 = ['#fc6076', '#ff9a44', '#ef9d43', '#e75516'];
-
-const getHoverColors = (colors: string[]) =>
-    colors.map((color) => new TinyColor(color).lighten(5).toString());
-const getActiveColors = (colors: string[]) =>
-    colors.map((color) => new TinyColor(color).darken(5).toString());
 
 const contentStyle: React.CSSProperties = {
     margin: 0,
@@ -89,25 +75,12 @@ export const CarPage = () => {
                         <Text>{car.daily_rent} ₽</Text>
                     </div>
                     <Divider />
+                    <ApplicationModal
+                        title="Заявка на аренду"
+                        carName={car.name}
+                    />
                 </div>
             )}
-
-            <ConfigProvider
-                theme={{
-                    components: {
-                        Button: {
-                            colorPrimary: `linear-gradient(135deg, ${colors2.join(', ')})`,
-                            colorPrimaryHover: `linear-gradient(135deg, ${getHoverColors(colors2).join(', ')})`,
-                            colorPrimaryActive: `linear-gradient(135deg, ${getActiveColors(colors2).join(', ')})`,
-                            lineWidth: 0,
-                        },
-                    },
-                }}
-            >
-                <Button type="primary" size="large" style={{ width: '100%' }}>
-                    Подать заявку
-                </Button>
-            </ConfigProvider>
         </>
     );
 };

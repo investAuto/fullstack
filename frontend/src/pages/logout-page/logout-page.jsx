@@ -1,21 +1,22 @@
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/auth-provider';
+import { useAuth } from '../../context/hook_use_auth';
 import { useEffect } from 'react';
+import { UsersContext } from '../../context/user-context/user-context';
 
-const Logout = () => {
-    const { token, setToken } = useAuth();
+export const Logout = () => {
+    const { deleteCurrentUser } = useContext(UsersContext);
+    const { setToken } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        // TODO как здесь удалить localStorage
-        setToken();
-        localStorage.removeItem('phone');
-        navigate('/cars', { replace: true });
-    };
-
     useEffect(() => {
+        const handleLogout = () => {
+            setToken();
+            navigate('/cars', { replace: true });
+        };
         handleLogout();
-    }, [token]);
+        deleteCurrentUser();
+    }, [deleteCurrentUser, setToken, navigate]);
 
     return (
         <>
@@ -23,5 +24,3 @@ const Logout = () => {
         </>
     );
 };
-
-export default Logout;

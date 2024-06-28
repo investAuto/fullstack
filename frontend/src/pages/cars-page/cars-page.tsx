@@ -1,14 +1,7 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Flex, Card } from 'antd';
-import {
-    NavLink,
-    useLoaderData,
-    useSearchParams,
-    useNavigate,
-    useParams,
-    useLocation,
-} from 'react-router-dom';
+import { NavLink, useSearchParams, useNavigate } from 'react-router-dom';
 import { Preloader } from '../../components/preloader/preloader';
 import { Pagination } from 'antd';
 import { CarAPI } from '../../api/cars-api';
@@ -40,17 +33,17 @@ export const ListOfCars = () => {
             // if (carsData?.count < 11) {
             //     setCurrentPage(1);
             // }
+            // TODO может быть убрать отсюда try catch
             try {
                 const data = await CarAPI.carsLoader({
                     params: { page: currentPage },
                 });
                 setCarsData(data);
             } catch (error) {
-                console.log(error);
+                return error;
             }
         };
         fetchData();
-        console.log('Загружены данные для страницы:', currentPage);
     }, [currentPage]);
 
     if (!carsData) {

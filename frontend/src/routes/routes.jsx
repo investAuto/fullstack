@@ -5,9 +5,7 @@ import {
     Route,
     Navigate,
 } from 'react-router-dom';
-import { useAuth } from '../context/auth-provider';
 import { ProtectedRoute } from '../routes/projected-route';
-import { router } from '../index';
 
 import 'antd/dist/reset.css';
 import App from '../App';
@@ -15,20 +13,16 @@ import ErrorPage from '../error-page';
 import ListOfCars from '../pages/cars-page/cars-page';
 import { CarAPI } from '../api/cars-api';
 import { CarPage } from '../pages/car-page/car-page';
-import { Rents } from '../components/rents/rents';
 import NotFoundPage from '../not-found';
 import { LoginPage } from '../pages/login-page/login-page';
-import Logout from '../pages/logout-page/logout-page';
+import { Logout } from '../pages/logout-page/logout-page';
 import { RegisterPage } from '../pages/register-page/register-page';
 import { TestPage } from '../pages/test_page/test-page';
 import { UserPage } from '../pages/user-page/user-page';
 import { AddServiceForm } from '../components/service-add-form/service-add-form';
 import { EditServiceForm } from '../components/service-edit-form/service-edit-form';
-import { Preloader } from '../components/preloader/preloader';
 
-const Routes = () => {
-    const { token } = useAuth();
-
+export const Routes = () => {
     const router = createBrowserRouter(
         createRoutesFromElements(
             <Route path="/" element={<App />} errorElement={<ErrorPage />}>
@@ -42,7 +36,7 @@ const Routes = () => {
                     <Route path="login" element={<LoginPage />} />
                     <Route path="logout" element={<Logout />} />
                     <Route path="register" element={<RegisterPage />} />
-                    <Route path="1" element={<TestPage />} />
+                    {/* <Route path="1" element={<TestPage />} /> */}
                     <Route path="/" element={<ProtectedRoute />}>
                         <Route
                             path="services/:serviceId/edit/"
@@ -66,8 +60,5 @@ const Routes = () => {
         )
     );
 
-    // Provide the router configuration using RouterProvider
     return <RouterProvider router={router} />;
 };
-
-export default Routes;

@@ -1,4 +1,4 @@
-import Template from './components/template';
+import { Template } from './components/template';
 import { Outlet } from 'react-router-dom';
 
 function App() {

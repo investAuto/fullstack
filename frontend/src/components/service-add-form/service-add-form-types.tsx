@@ -6,6 +6,8 @@ export interface Rents {
 }
 
 export interface PhotoObj {
+    id: number;
+    name: string;
     thumbUrl: string;
 }
 
@@ -17,7 +19,7 @@ export interface Service {
 export type FieldType = {
     carLicensePlate: string;
     serviceName: string;
-    comment: string;
+    serviceCommen?: string;
     images: PhotoObj[];
 };
 

@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Button, Card, Flex, Image, Typography } from 'antd';
-import { NavLink, useLoaderData } from 'react-router-dom';
-import { Rents } from '../../components/rents/rents';
-import { useAuth } from '../../context/auth-provider';
+import { Button, Card, Flex, Typography } from 'antd';
 import { ServicesImageList } from '../../components/images/service-image-list';
 import { EditOutlined } from '@ant-design/icons';
-import { FloatButton } from 'antd';
 import { CarAPI } from '../../api/cars-api';
 import { useNavigate } from 'react-router-dom';
+import { Preloader } from '../preloader/preloader';
 
 const { Text, Title } = Typography;
 
@@ -32,13 +28,6 @@ const cardStyle: React.CSSProperties = {
     marginBottom: '10px',
     color: 'red',
     width: 620,
-    // height: 200,
-};
-
-const imgStyle: React.CSSProperties = {
-    display: 'block',
-    height: 100,
-    maxWidth: 200,
 };
 
 export const Services = () => {
@@ -53,16 +42,14 @@ export const Services = () => {
     }, []);
 
     if (!services) {
-        return <div>Loading...</div>;
+        return <Preloader />;
     }
 
     return (
         <div>
-            {/* // TODO Вынести блок с арендами в отдельный компонент */}
             <Title level={3}>Сервисы</Title>
 
             {services.map((service) => (
-                // <NavLink to={`/cars/${rent.car_id}/`} key={rent.car_id}>
                 <Card
                     key={service.id}
                     hoverable
@@ -85,11 +72,7 @@ export const Services = () => {
                         ) : (
                             <div style={{ height: '100px' }}>
                                 <h1>Привет</h1>
-                                <img
-                                    // height={100}
-                                    // style={imgStyle}
-                                    src="https://a.d-cd.net/8d95f9as-480.jpg"
-                                />
+                                <img src="https://a.d-cd.net/8d95f9as-480.jpg" />
                             </div>
                         )}
                         <Flex
@@ -106,20 +89,10 @@ export const Services = () => {
                             </Text>
                             <Text underline>{service.id}</Text>
                             <Text>{service.comment}</Text>
-
-                            {/* <Button
-                        type="primary"
-                        // href="https://ant.design"
-                        target="_blank"
-                    >
-                        Get Started
-                    </Button> */}
                         </Flex>
                     </Flex>
                 </Card>
-                // </NavLink>
             ))}
-            {/* <Card title="Card title">Card content</Card> */}
         </div>
     );
 };

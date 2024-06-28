@@ -45,7 +45,7 @@ export const UserAPI = {
 
                 return response.data;
             })
-            .catch((error) => {
+            .catch(() => {
                 RESPONSE_MESSAGE.error('Неверный логин или пароль!');
             });
     },
@@ -56,7 +56,6 @@ export const UserAPI = {
                 return response.data;
             })
             .catch((error) => {
-                console.error(error.message);
                 RESPONSE_MESSAGE.error(error.message);
             });
     },

@@ -1,6 +1,6 @@
 import React from 'react';
 import type { FormProps } from 'antd';
-import { Button, Checkbox, Flex, Form, Input } from 'antd';
+import { Button, Flex, Form, Input } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UserAPI } from '../../api/user-api';
 
@@ -15,15 +15,16 @@ type FieldType = {
 // };
 
 const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    // TODO Нужна обработка неправильной отправки формы
+    // TODO нужно понять вообще в каких случаях она может упасть
+    return errorInfo;
 };
 
 export const RegisterPage: React.FC = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
         UserAPI.register(values.fullname, values.phone, values.password);
-        console.log('Success:', values);
         navigate(-1);
     };
 
@@ -64,7 +65,6 @@ export const RegisterPage: React.FC = () => {
                 >
                     <Input />
                 </Form.Item>
-
                 <Form.Item<FieldType>
                     label="Password"
                     name="password"
@@ -77,15 +77,6 @@ export const RegisterPage: React.FC = () => {
                 >
                     <Input.Password />
                 </Form.Item>
-
-                {/* <Form.Item<FieldType>
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{ offset: 8, span: 16 }}
-        >
-            <Checkbox>Remember me</Checkbox>
-        </Form.Item> */}
-
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                     <Button type="primary" htmlType="submit">
                         Submit

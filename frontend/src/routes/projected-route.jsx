@@ -1,4 +1,4 @@
-import { useAuth } from '../context/auth-provider';
+import { useAuth } from '../context/hook_use_auth';
 import { Outlet, Navigate } from 'react-router-dom';
 
 export const ProtectedRoute = () => {
